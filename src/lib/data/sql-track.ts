@@ -1,0 +1,231 @@
+import type { StaticTrack } from "./lesson-content";
+
+// SQL lessons use JS to simulate SQL with in-memory data structures
+// Students write the LOGIC, not SQL syntax (engine = browser/JS)
+
+export const SQL_TRACK: StaticTrack = {
+  id: "sql", title: "SQL", color: "#e38c00",
+  description: `Query databases like a pro. SELECT, JOINs, aggregations, and optimization.`,
+  difficulty_curve: "beginner", execution_engine: "browser",
+  category: "database", order_index: 50, is_published: true, estimated_hours: 12, learner_count: 16800,
+  units: [
+    {
+      id: "sql-u1", track_id: "sql", title: "SELECT Basics", icon: "database", order_index: 1,
+      description: `Querying data: SELECT, WHERE, ORDER BY, LIMIT`,
+      lessons: [
+        {
+          id: "sql-u1-l1", unit_id: "sql-u1", track_id: "sql", type: "concept", order_index: 1, xp_reward: 50, execution_engine: "browser",
+          title: "Your First SELECT",
+          explanation_md: `# Your First SELECT\n\nSQL (Structured Query Language) is used to query databases.\n\n\`\`\`sql\n-- Get all columns from a table\nSELECT * FROM users;\n\n-- Get specific columns\nSELECT name, email FROM users;\n\n-- Filter with WHERE\nSELECT * FROM users WHERE age > 18;\n\n-- Order results\nSELECT name FROM users ORDER BY name ASC;\n\`\`\`\n\n## Your Task\nYou have a \`users\` array. Write \`selectAll(users)\` that returns all user names sorted A-Z.`,
+          starter_code: `const users = [\n  { id: 1, name: 'Charlie', age: 25, city: 'NYC' },\n  { id: 2, name: 'Alice',   age: 30, city: 'LA'  },\n  { id: 3, name: 'Bob',     age: 22, city: 'NYC' },\n];\n\n// SQL: SELECT name FROM users ORDER BY name ASC\nfunction selectAll(users) {\n  return users\n    .map(u => u.name)\n    .sort();\n}\n\nconsole.log(selectAll(users).join(', ')); // Alice, Bob, Charlie\n`,
+          reference_solution: `const users = [\n  { id: 1, name: 'Charlie', age: 25, city: 'NYC' },\n  { id: 2, name: 'Alice',   age: 30, city: 'LA'  },\n  { id: 3, name: 'Bob',     age: 22, city: 'NYC' },\n];\nfunction selectAll(users) {\n  return users.map(u => u.name).sort();\n}\nconsole.log(selectAll(users).join(', '));\n`,
+          hints: ["Use .map(u => u.name) to get just names", '.sort() sorts alphabetically'],
+          test_cases: [{ description: `Names sorted A-Z`, expected_output: `Alice, Bob, Charlie` }],
+        },
+        {
+          id: "sql-u1-l2", unit_id: "sql-u1", track_id: "sql", type: "challenge", order_index: 2, xp_reward: 100, execution_engine: "browser",
+          title: "WHERE Filtering",
+          explanation_md: `# WHERE Clause\n\nFilter rows with WHERE:\n\n\`\`\`sql\nSELECT * FROM products\nWHERE price < 100\n  AND category = 'electronics';\n\nSELECT * FROM orders\nWHERE status IN ('pending', 'processing');\n\nSELECT * FROM users\nWHERE name LIKE 'A%'; -- starts with A\n\`\`\`\n\n## Your Task\nWrite \`filterUsers(users, minAge, city)\` that returns names of users:\n- Older than \`minAge\`\n- Living in \`city\`\n- Sorted alphabetically`,
+          starter_code: `const users = [\n  { name: 'Alice',   age: 30, city: 'NYC' },\n  { name: 'Bob',     age: 22, city: 'LA'  },\n  { name: 'Carol',   age: 27, city: 'NYC' },\n  { name: 'Dave',    age: 19, city: 'NYC' },\n  { name: 'Eve',     age: 35, city: 'LA'  },\n];\n\n// SQL: SELECT name FROM users WHERE age > minAge AND city = city ORDER BY name\nfunction filterUsers(users, minAge, city) {\n  // Filter by age > minAge AND city, return names sorted A-Z\n}\n\nconsole.log(filterUsers(users, 25, 'NYC').join(', ')); // Alice, Carol\nconsole.log(filterUsers(users, 20, 'LA').join(', '));  // Eve\n`,
+          reference_solution: `const users = [\n  { name: 'Alice', age: 30, city: 'NYC' },\n  { name: 'Bob', age: 22, city: 'LA' },\n  { name: 'Carol', age: 27, city: 'NYC' },\n  { name: 'Dave', age: 19, city: 'NYC' },\n  { name: 'Eve', age: 35, city: 'LA' },\n];\nfunction filterUsers(users, minAge, city) {\n  return users\n    .filter(u => u.age > minAge && u.city === city)\n    .map(u => u.name)\n    .sort();\n}\nconsole.log(filterUsers(users, 25, 'NYC').join(', '));\nconsole.log(filterUsers(users, 20, 'LA').join(', '));\n`,
+          hints: [".filter(u => u.age > minAge && u.city === city)", '.map(u => u.name).sort()'],
+          test_cases: [
+            { description: `NYC users over 25`, expected_output: `Alice, Carol` },
+            { description: `LA users over 20`, expected_output: `Eve` },
+          ],
+        },
+        {
+          id: "sql-u1-l3", unit_id: "sql-u1", track_id: "sql", type: "challenge", order_index: 3, xp_reward: 125, execution_engine: "browser",
+          title: "ORDER BY & LIMIT",
+          explanation_md: `# ORDER BY & LIMIT\n\n\`\`\`sql\n-- Top 3 most expensive products\nSELECT name, price\nFROM products\nORDER BY price DESC\nLIMIT 3;\n\n-- Oldest users first\nSELECT name, age\nFROM users\nORDER BY age DESC;\n\`\`\`\n\n## Your Task\nWrite \`topProducts(products, n)\` that returns the top \`n\` products by price (descending), formatted as \`"name: $price"\`.`,
+          starter_code: `const products = [\n  { name: 'Laptop',  price: 999 },\n  { name: 'Mouse',   price: 29  },\n  { name: 'Monitor', price: 399 },\n  { name: 'Keyboard',price: 79  },\n  { name: 'Webcam',  price: 89  },\n];\n\n// SQL: SELECT name, price FROM products ORDER BY price DESC LIMIT n\nfunction topProducts(products, n) {\n  // Return top n by price, formatted as 'name: $price'\n}\n\nconsole.log(topProducts(products, 3).join('\\n'));\n// Laptop: $999\n// Monitor: $399\n// Webcam: $89\n`,
+          reference_solution: `const products = [\n  { name: 'Laptop', price: 999 },\n  { name: 'Mouse', price: 29 },\n  { name: 'Monitor', price: 399 },\n  { name: 'Keyboard', price: 79 },\n  { name: 'Webcam', price: 89 },\n];\nfunction topProducts(products, n) {\n  return [...products]\n    .sort((a, b) => b.price - a.price)\n    .slice(0, n)\n    .map(p => p.name + ': $' + p.price);\n}\nconsole.log(topProducts(products, 3).join('\\n'));\n`,
+          hints: [".sort((a, b) => b.price - a.price) for descending", ".slice(0, n) for LIMIT", ".map(p => p.name + ': $' + p.price)"],
+          test_cases: [
+            { description: `Top product is Laptop`, expected_output: `Laptop: $999` },
+            { description: `Second is Monitor`, expected_output: `Monitor: $399` },
+            { description: `Third is Webcam`, expected_output: `Webcam: $89` },
+          ],
+        },
+        {
+          id: "sql-u1-l4", unit_id: "sql-u1", track_id: "sql", type: "boss", order_index: 4, xp_reward: 300, execution_engine: "browser",
+          title: "Boss: Query Builder",
+          explanation_md: `# Boss: Query Builder\n\nBuild a mini query builder that supports chaining:\n\n\`\`\`js\nconst result = query(users)\n  .where(u => u.age > 25)\n  .orderBy('name')\n  .limit(3)\n  .select(u => u.name)\n  .execute();\n\`\`\`\n\nImplement \`query(data)\` returning a chainable object with \`.where()\`, \`.orderBy()\`, \`.limit()\`, \`.select()\`, and \`.execute()\`.`,
+          starter_code: `function query(data) {\n  let _data = [...data];\n  let _select = null;\n\n  const q = {\n    where(fn) { _data = _data.filter(fn); return q; },\n    orderBy(key, dir = 'asc') {\n      _data = [..._data].sort((a, b) => {\n        if (a[key] < b[key]) return dir === 'asc' ? -1 : 1;\n        if (a[key] > b[key]) return dir === 'asc' ? 1 : -1;\n        return 0;\n      });\n      return q;\n    },\n    limit(n) { _data = _data.slice(0, n); return q; },\n    select(fn) { _select = fn; return q; },\n    execute() { return _select ? _data.map(_select) : _data; },\n  };\n  return q;\n}\n\nconst users = [\n  { name: 'Alice', age: 30, city: 'NYC' },\n  { name: 'Bob',   age: 22, city: 'LA'  },\n  { name: 'Carol', age: 27, city: 'NYC' },\n  { name: 'Dave',  age: 35, city: 'NYC' },\n  { name: 'Eve',   age: 19, city: 'LA'  },\n];\n\nconst result = query(users)\n  .where(u => u.age > 25)\n  .orderBy('name')\n  .limit(3)\n  .select(u => u.name)\n  .execute();\n\nconsole.log(result.join(', ')); // Alice, Carol, Dave\n`,
+          reference_solution: `function query(data) {\n  let _data = [...data]; let _select = null;\n  const q = {\n    where(fn) { _data = _data.filter(fn); return q; },\n    orderBy(key, dir='asc') { _data = [..._data].sort((a,b)=>{ if(a[key]<b[key]) return dir==='asc'?-1:1; if(a[key]>b[key]) return dir==='asc'?1:-1; return 0; }); return q; },\n    limit(n) { _data = _data.slice(0,n); return q; },\n    select(fn) { _select = fn; return q; },\n    execute() { return _select ? _data.map(_select) : _data; },\n  };\n  return q;\n}\nconst users = [\n  { name: 'Alice', age: 30, city: 'NYC' },\n  { name: 'Bob', age: 22, city: 'LA' },\n  { name: 'Carol', age: 27, city: 'NYC' },\n  { name: 'Dave', age: 35, city: 'NYC' },\n  { name: 'Eve', age: 19, city: 'LA' },\n];\nconst result = query(users).where(u=>u.age>25).orderBy('name').limit(3).select(u=>u.name).execute();\nconsole.log(result.join(', '));\n`,
+          hints: ["The starter code is complete — run it!", "Each method returns q for chaining", 'execute() applies the _select transform'],
+          test_cases: [{ description: `Chained query result`, expected_output: `Alice, Carol, Dave` }],
+        },
+      ],
+    },
+    {
+      id: "sql-u2", track_id: "sql", title: "Aggregation & Grouping", icon: "bar-chart", order_index: 2,
+      description: `COUNT, SUM, AVG, GROUP BY, HAVING`,
+      lessons: [
+        {
+          id: "sql-u2-l1", unit_id: "sql-u2", track_id: "sql", type: "challenge", order_index: 1, xp_reward: 100, execution_engine: "browser",
+          title: "COUNT & SUM",
+          explanation_md: `# COUNT, SUM, AVG\n\nAggregate functions compute values across rows:\n\n\`\`\`sql\nSELECT COUNT(*) FROM orders;         -- total orders\nSELECT SUM(amount) FROM orders;      -- total revenue\nSELECT AVG(amount) FROM orders;      -- average order\nSELECT MAX(price) FROM products;     -- highest price\nSELECT MIN(price) FROM products;     -- lowest price\n\`\`\`\n\n## Your Task\nWrite \`summarize(orders)\` that returns:\n- \`count\`: number of orders\n- \`total\`: sum of all amounts\n- \`average\`: average amount (1 decimal)\n- \`max\`: highest single order`,
+          starter_code: `const orders = [\n  { id: 1, amount: 120 },\n  { id: 2, amount: 45  },\n  { id: 3, amount: 200 },\n  { id: 4, amount: 75  },\n  { id: 5, amount: 310 },\n];\n\nfunction summarize(orders) {\n  // Return { count, total, average, max }\n}\n\nconst s = summarize(orders);\nconsole.log('count: '   + s.count);   // count: 5\nconsole.log('total: '   + s.total);   // total: 750\nconsole.log('average: ' + s.average); // average: 150.0\nconsole.log('max: '     + s.max);     // max: 310\n`,
+          reference_solution: `const orders = [\n  { id: 1, amount: 120 }, { id: 2, amount: 45 },\n  { id: 3, amount: 200 }, { id: 4, amount: 75 }, { id: 5, amount: 310 },\n];\nfunction summarize(orders) {\n  const amounts = orders.map(o => o.amount);\n  const total = amounts.reduce((a, b) => a + b, 0);\n  return {\n    count: orders.length,\n    total,\n    average: (total / orders.length).toFixed(1) * 1,\n    max: Math.max(...amounts),\n  };\n}\nconst s = summarize(orders);\nconsole.log('count: ' + s.count);\nconsole.log('total: ' + s.total);\nconsole.log('average: ' + s.average);\nconsole.log('max: ' + s.max);\n`,
+          hints: ["Use .reduce((a, b) => a+b, 0) for sum", "average = total / count, toFixed(1)", 'Math.max(...amounts) for max'],
+          test_cases: [
+            { description: `count: 5`, expected_output: `count: 5` },
+            { description: `total: 750`, expected_output: `total: 750` },
+            { description: `max: 310`, expected_output: `max: 310` },
+          ],
+        },
+        {
+          id: "sql-u2-l2", unit_id: "sql-u2", track_id: "sql", type: "challenge", order_index: 2, xp_reward: 125, execution_engine: "browser",
+          title: "GROUP BY",
+          explanation_md: `# GROUP BY\n\nGroup rows and aggregate within each group:\n\n\`\`\`sql\n-- Sales by category\nSELECT category,\n       COUNT(*) as count,\n       SUM(price) as revenue\nFROM products\nGROUP BY category\nORDER BY revenue DESC;\n\`\`\`\n\n## Your Task\nWrite \`groupByCity(users)\` that returns an object where each key is a city name and the value is the count of users in that city.`,
+          starter_code: `const users = [\n  { name: 'Alice', city: 'NYC' },\n  { name: 'Bob',   city: 'LA'  },\n  { name: 'Carol', city: 'NYC' },\n  { name: 'Dave',  city: 'NYC' },\n  { name: 'Eve',   city: 'LA'  },\n  { name: 'Frank', city: 'CHI' },\n];\n\n// SQL: SELECT city, COUNT(*) FROM users GROUP BY city\nfunction groupByCity(users) {\n  // Return { city: count, ... }\n}\n\nconst result = groupByCity(users);\nconsole.log('NYC: ' + result.NYC); // NYC: 3\nconsole.log('LA: '  + result.LA);  // LA: 2\nconsole.log('CHI: ' + result.CHI); // CHI: 1\n`,
+          reference_solution: `const users = [\n  { name: 'Alice', city: 'NYC' }, { name: 'Bob', city: 'LA' },\n  { name: 'Carol', city: 'NYC' }, { name: 'Dave', city: 'NYC' },\n  { name: 'Eve', city: 'LA' }, { name: 'Frank', city: 'CHI' },\n];\nfunction groupByCity(users) {\n  return users.reduce((acc, u) => {\n    acc[u.city] = (acc[u.city] || 0) + 1;\n    return acc;\n  }, {});\n}\nconst result = groupByCity(users);\nconsole.log('NYC: ' + result.NYC);\nconsole.log('LA: ' + result.LA);\nconsole.log('CHI: ' + result.CHI);\n`,
+          hints: ["Use .reduce() to build the object", "acc[u.city] = (acc[u.city] || 0) + 1"],
+          test_cases: [
+            { description: `NYC: 3`, expected_output: `NYC: 3` },
+            { description: `LA: 2`, expected_output: `LA: 2` },
+            { description: `CHI: 1`, expected_output: `CHI: 1` },
+          ],
+        },
+        {
+          id: "sql-u2-l3", unit_id: "sql-u2", track_id: "sql", type: "challenge", order_index: 3, xp_reward: 150, execution_engine: "browser",
+          title: "HAVING (Filter Groups)",
+          explanation_md: `# HAVING\n\nHAVING filters *after* GROUP BY (unlike WHERE which filters rows):\n\n\`\`\`sql\n-- Cities with more than 5 users\nSELECT city, COUNT(*) as user_count\nFROM users\nGROUP BY city\nHAVING COUNT(*) > 5\nORDER BY user_count DESC;\n\`\`\`\n\n## Your Task\nWrite \`busyCities(orders, minOrders)\` that returns cities that have at least \`minOrders\` orders, sorted by order count descending.`,
+          starter_code: `const orders = [\n  { city: 'NYC' }, { city: 'NYC' }, { city: 'NYC' },\n  { city: 'LA'  }, { city: 'LA'  },\n  { city: 'CHI' },\n  { city: 'NYC' }, { city: 'LA'  },\n];\n\n// SQL: SELECT city, COUNT(*) FROM orders GROUP BY city HAVING COUNT(*) >= minOrders ORDER BY COUNT(*) DESC\nfunction busyCities(orders, minOrders) {\n  // Group by city, filter by count >= minOrders, sort by count desc\n}\n\nconsole.log(busyCities(orders, 2).join(', ')); // NYC, LA\nconsole.log(busyCities(orders, 3).join(', ')); // NYC\n`,
+          reference_solution: `const orders = [\n  {city:'NYC'},{city:'NYC'},{city:'NYC'},\n  {city:'LA'},{city:'LA'},\n  {city:'CHI'},\n  {city:'NYC'},{city:'LA'},\n];\nfunction busyCities(orders, minOrders) {\n  const counts = orders.reduce((acc, o) => { acc[o.city]=(acc[o.city]||0)+1; return acc; }, {});\n  return Object.entries(counts)\n    .filter(([,count]) => count >= minOrders)\n    .sort(([,a],[,b]) => b - a)\n    .map(([city]) => city);\n}\nconsole.log(busyCities(orders, 2).join(', '));\nconsole.log(busyCities(orders, 3).join(', '));\n`,
+          hints: ["First reduce to get city counts", "Filter entries where count >= minOrders", "Sort by count descending, map to city name"],
+          test_cases: [
+            { description: `minOrders=2: NYC, LA`, expected_output: `NYC, LA` },
+            { description: `minOrders=3: NYC only`, expected_output: `NYC` },
+          ],
+        },
+        {
+          id: "sql-u2-l4", unit_id: "sql-u2", track_id: "sql", type: "boss", order_index: 4, xp_reward: 400, execution_engine: "browser",
+          title: "Boss: Sales Report",
+          explanation_md: `# Boss: Full Sales Report\n\nGenerate a complete sales report from raw transaction data!\n\n\`\`\`sql\nSELECT\n  category,\n  COUNT(*) as sales,\n  SUM(amount) as revenue,\n  AVG(amount) as avg_sale,\n  MAX(amount) as top_sale\nFROM transactions\nGROUP BY category\nHAVING SUM(amount) > 100\nORDER BY revenue DESC;\n\`\`\`\n\n## Your Task\nWrite \`salesReport(transactions, minRevenue)\` that groups by category, computes stats, and filters categories with total revenue >= minRevenue. Sort by revenue descending.`,
+          starter_code: `function salesReport(transactions, minRevenue = 0) {\n  // Group by category, compute { category, sales, revenue, avg, top }\n  // Filter by revenue >= minRevenue, sort by revenue desc\n  const groups = {};\n  for (const t of transactions) {\n    if (!groups[t.category]) groups[t.category] = [];\n    groups[t.category].push(t.amount);\n  }\n  return Object.entries(groups)\n    .map(([category, amounts]) => ({\n      category,\n      sales: amounts.length,\n      revenue: amounts.reduce((a,b)=>a+b,0),\n      avg: Math.round(amounts.reduce((a,b)=>a+b,0)/amounts.length),\n      top: Math.max(...amounts),\n    }))\n    .filter(r => r.revenue >= minRevenue)\n    .sort((a, b) => b.revenue - a.revenue);\n}\n\nconst txns = [\n  { category: 'Electronics', amount: 500 },\n  { category: 'Food',        amount: 25  },\n  { category: 'Electronics', amount: 300 },\n  { category: 'Food',        amount: 15  },\n  { category: 'Books',       amount: 40  },\n  { category: 'Electronics', amount: 200 },\n  { category: 'Books',       amount: 60  },\n];\n\nconst report = salesReport(txns, 100);\nreport.forEach(r => console.log(r.category + ': $' + r.revenue + ' (' + r.sales + ' sales)'));\n`,
+          reference_solution: `function salesReport(transactions, minRevenue = 0) {\n  const groups = {};\n  for (const t of transactions) { if (!groups[t.category]) groups[t.category] = []; groups[t.category].push(t.amount); }\n  return Object.entries(groups)\n    .map(([category, amounts]) => ({ category, sales: amounts.length, revenue: amounts.reduce((a,b)=>a+b,0), avg: Math.round(amounts.reduce((a,b)=>a+b,0)/amounts.length), top: Math.max(...amounts) }))\n    .filter(r => r.revenue >= minRevenue)\n    .sort((a,b) => b.revenue - a.revenue);\n}\nconst txns = [\n  {category:'Electronics',amount:500},{category:'Food',amount:25},\n  {category:'Electronics',amount:300},{category:'Food',amount:15},\n  {category:'Books',amount:40},{category:'Electronics',amount:200},{category:'Books',amount:60},\n];\nconst report = salesReport(txns, 100);\nreport.forEach(r => console.log(r.category + ': $' + r.revenue + ' (' + r.sales + ' sales)'));\n`,
+          hints: ["The starter code is complete — run it!", "Group by category first, then compute stats per group", 'Filter by minRevenue and sort descending'],
+          test_cases: [
+            { description: `Electronics first (highest revenue)`, expected_output: `Electronics: $1000 (3 sales)` },
+            { description: `Books second`, expected_output: `Books: $100 (2 sales)` },
+            { description: `Food excluded (only $40 revenue < 100)`, expected_output: `Electronics: $1000 (3 sales)` },
+          ],
+        },
+      ],
+    },
+    {
+      id: "sql-u3", track_id: "sql", title: "JOINs", icon: "git-merge", order_index: 3,
+      description: `INNER JOIN, LEFT JOIN, self-join, and multi-table queries`,
+      lessons: [
+        {
+          id: "sql-u3-l1", unit_id: "sql-u3", track_id: "sql", type: "challenge", order_index: 1, xp_reward: 125, execution_engine: "browser",
+          title: "INNER JOIN",
+          explanation_md: `# INNER JOIN\n\nJoins combine rows from two tables based on a related column:\n\n\`\`\`sql\nSELECT orders.id, users.name, orders.amount\nFROM orders\nINNER JOIN users ON orders.user_id = users.id;\n\`\`\`\n\nOnly rows that match in BOTH tables are returned.\n\n## Your Task\nWrite \`innerJoin(orders, users)\` that joins orders with users on \`user_id = id\`.\nReturn array of \`{ orderId, userName, amount }\`.`,
+          starter_code: `const users = [\n  { id: 1, name: 'Alice' },\n  { id: 2, name: 'Bob'   },\n  { id: 3, name: 'Carol' },\n];\n\nconst orders = [\n  { id: 101, user_id: 1, amount: 200 },\n  { id: 102, user_id: 2, amount: 150 },\n  { id: 103, user_id: 1, amount: 75  },\n  { id: 104, user_id: 9, amount: 50  }, // no matching user\n];\n\n// SQL: SELECT orders.id, users.name, orders.amount\n//      FROM orders INNER JOIN users ON orders.user_id = users.id\nfunction innerJoin(orders, users) {\n  const userMap = {};\n  users.forEach(u => userMap[u.id] = u.name);\n  return orders\n    .filter(o => userMap[o.user_id] !== undefined)\n    .map(o => ({ orderId: o.id, userName: userMap[o.user_id], amount: o.amount }));\n}\n\nconst result = innerJoin(orders, users);\nresult.forEach(r => console.log(r.orderId + ': ' + r.userName + ' - $' + r.amount));\n`,
+          reference_solution: `const users = [{id:1,name:'Alice'},{id:2,name:'Bob'},{id:3,name:'Carol'}];\nconst orders = [{id:101,user_id:1,amount:200},{id:102,user_id:2,amount:150},{id:103,user_id:1,amount:75},{id:104,user_id:9,amount:50}];\nfunction innerJoin(orders, users) {\n  const userMap = {};\n  users.forEach(u => userMap[u.id] = u.name);\n  return orders.filter(o => userMap[o.user_id] !== undefined).map(o => ({orderId: o.id, userName: userMap[o.user_id], amount: o.amount}));\n}\nconst result = innerJoin(orders, users);\nresult.forEach(r => console.log(r.orderId + ': ' + r.userName + ' - $' + r.amount));\n`,
+          hints: ["Build a userMap from id to name first", "Filter orders where user_id exists in userMap", "Order 104 has no matching user, so it's excluded"],
+          test_cases: [
+            { description: `Order 101 Alice`, expected_output: `101: Alice - $200` },
+            { description: `Order 102 Bob`, expected_output: `102: Bob - $150` },
+            { description: `Order 103 Alice again`, expected_output: `103: Alice - $75` },
+          ],
+        },
+        {
+          id: "sql-u3-l2", unit_id: "sql-u3", track_id: "sql", type: "challenge", order_index: 2, xp_reward: 150, execution_engine: "browser",
+          title: "LEFT JOIN",
+          explanation_md: `# LEFT JOIN\n\nLEFT JOIN returns ALL rows from the left table, and matching rows from the right (NULL if no match):\n\n\`\`\`sql\nSELECT users.name, orders.amount\nFROM users\nLEFT JOIN orders ON users.id = orders.user_id;\n-- All users appear, even those with no orders\n\`\`\`\n\n## Your Task\nWrite \`leftJoin(users, orders)\` that returns all users with their total order amounts.\nIf a user has no orders, their total should be 0.`,
+          starter_code: `const users = [\n  { id: 1, name: 'Alice' },\n  { id: 2, name: 'Bob'   },\n  { id: 3, name: 'Carol' }, // no orders\n];\n\nconst orders = [\n  { user_id: 1, amount: 200 },\n  { user_id: 1, amount: 75  },\n  { user_id: 2, amount: 150 },\n];\n\n// SQL: SELECT users.name, SUM(COALESCE(orders.amount, 0)) as total\n//      FROM users LEFT JOIN orders ON users.id = orders.user_id\n//      GROUP BY users.id\nfunction leftJoin(users, orders) {\n  return users.map(u => {\n    const userOrders = orders.filter(o => o.user_id === u.id);\n    const total = userOrders.reduce((sum, o) => sum + o.amount, 0);\n    return { name: u.name, total };\n  });\n}\n\nconst result = leftJoin(users, orders);\nresult.forEach(r => console.log(r.name + ': $' + r.total));\n`,
+          reference_solution: `const users = [{id:1,name:'Alice'},{id:2,name:'Bob'},{id:3,name:'Carol'}];\nconst orders = [{user_id:1,amount:200},{user_id:1,amount:75},{user_id:2,amount:150}];\nfunction leftJoin(users, orders) {\n  return users.map(u => {\n    const userOrders = orders.filter(o => o.user_id === u.id);\n    return { name: u.name, total: userOrders.reduce((s, o) => s + o.amount, 0) };\n  });\n}\nconst result = leftJoin(users, orders);\nresult.forEach(r => console.log(r.name + ': $' + r.total));\n`,
+          hints: ["The starter code is complete — run it!", "For each user, filter orders where user_id matches", "reduce to sum amounts, default 0 if no orders"],
+          test_cases: [
+            { description: `Alice: $275`, expected_output: `Alice: $275` },
+            { description: `Bob: $150`, expected_output: `Bob: $150` },
+            { description: `Carol: $0 (no orders)`, expected_output: `Carol: $0` },
+          ],
+        },
+        {
+          id: "sql-u3-l3", unit_id: "sql-u3", track_id: "sql", type: "challenge", order_index: 3, xp_reward: 175, execution_engine: "browser",
+          title: "Multi-Table JOIN",
+          explanation_md: `# Multi-Table JOIN\n\nJoin three tables together:\n\n\`\`\`sql\nSELECT u.name, p.name as product, o.amount\nFROM orders o\nINNER JOIN users u ON o.user_id = u.id\nINNER JOIN products p ON o.product_id = p.id\nORDER BY o.amount DESC;\n\`\`\`\n\n## Your Task\nJoin orders → users → products and return formatted receipt lines sorted by amount descending.`,
+          starter_code: `const users    = [{id:1,name:'Alice'},{id:2,name:'Bob'}];\nconst products = [{id:10,name:'Laptop',price:999},{id:11,name:'Mouse',price:29}];\nconst orders   = [\n  {id:1, user_id:1, product_id:10, qty:1},\n  {id:2, user_id:2, product_id:11, qty:3},\n  {id:3, user_id:1, product_id:11, qty:2},\n];\n\nfunction joinAll(orders, users, products) {\n  const userMap = Object.fromEntries(users.map(u => [u.id, u.name]));\n  const prodMap = Object.fromEntries(products.map(p => [p.id, p]));\n  return orders\n    .map(o => ({\n      user: userMap[o.user_id],\n      product: prodMap[o.product_id].name,\n      total: prodMap[o.product_id].price * o.qty,\n    }))\n    .sort((a, b) => b.total - a.total)\n    .map(r => r.user + ' bought ' + r.product + ' for $' + r.total);\n}\n\njoinAll(orders, users, products).forEach(line => console.log(line));\n`,
+          reference_solution: `const users=[{id:1,name:'Alice'},{id:2,name:'Bob'}];\nconst products=[{id:10,name:'Laptop',price:999},{id:11,name:'Mouse',price:29}];\nconst orders=[{id:1,user_id:1,product_id:10,qty:1},{id:2,user_id:2,product_id:11,qty:3},{id:3,user_id:1,product_id:11,qty:2}];\nfunction joinAll(orders,users,products){\n  const uMap=Object.fromEntries(users.map(u=>[u.id,u.name]));\n  const pMap=Object.fromEntries(products.map(p=>[p.id,p]));\n  return orders.map(o=>({user:uMap[o.user_id],product:pMap[o.product_id].name,total:pMap[o.product_id].price*o.qty})).sort((a,b)=>b.total-a.total).map(r=>r.user+' bought '+r.product+' for $'+r.total);\n}\njoinAll(orders,users,products).forEach(l=>console.log(l));\n`,
+          hints: ["The starter code is complete — run it!", "Build lookup maps from arrays for O(1) access", 'Sort by total descending'],
+          test_cases: [
+            { description: `Alice bought Laptop for $999 first`, expected_output: `Alice bought Laptop for $999` },
+            { description: `Bob bought Mouse for $87`, expected_output: `Bob bought Mouse for $87` },
+            { description: `Alice bought Mouse for $58`, expected_output: `Alice bought Mouse for $58` },
+          ],
+        },
+        {
+          id: "sql-u3-l4", unit_id: "sql-u3", track_id: "sql", type: "boss", order_index: 4, xp_reward: 500, execution_engine: "browser",
+          title: "Boss: Customer Analytics",
+          explanation_md: `# Boss: Customer Analytics\n\nBuild a customer analytics function that computes per-customer stats across orders:\n\n**Output per customer:**\n- \`name\` — customer name\n- \`orderCount\` — total orders\n- \`totalSpent\` — total amount spent\n- \`avgOrder\` — average per order (1 decimal)\n- \`topCategory\` — category with most purchases\n\nSort by totalSpent descending.`,
+          starter_code: `function customerAnalytics(customers, orders) {\n  return customers.map(c => {\n    const co = orders.filter(o => o.customer_id === c.id);\n    const totalSpent = co.reduce((s, o) => s + o.amount, 0);\n    // Find top category\n    const catCounts = {};\n    co.forEach(o => catCounts[o.category] = (catCounts[o.category]||0)+1);\n    const topCategory = Object.entries(catCounts).sort((a,b)=>b[1]-a[1])[0]?.[0] || 'none';\n    return {\n      name: c.name,\n      orderCount: co.length,\n      totalSpent,\n      avgOrder: co.length ? Math.round(totalSpent/co.length*10)/10 : 0,\n      topCategory,\n    };\n  }).sort((a,b) => b.totalSpent - a.totalSpent);\n}\n\nconst customers = [\n  {id:1, name:'Alice'},\n  {id:2, name:'Bob'},\n  {id:3, name:'Carol'},\n];\nconst orders = [\n  {customer_id:1, amount:200, category:'Electronics'},\n  {customer_id:1, amount:50,  category:'Books'},\n  {customer_id:1, amount:150, category:'Electronics'},\n  {customer_id:2, amount:80,  category:'Food'},\n  {customer_id:2, amount:120, category:'Food'},\n  {customer_id:3, amount:500, category:'Electronics'},\n];\n\nconst report = customerAnalytics(customers, orders);\nreport.forEach(r => {\n  console.log(r.name + ': $' + r.totalSpent + ', top: ' + r.topCategory);\n});\n`,
+          reference_solution: `function customerAnalytics(customers, orders) {\n  return customers.map(c => {\n    const co = orders.filter(o => o.customer_id === c.id);\n    const totalSpent = co.reduce((s,o)=>s+o.amount,0);\n    const catCounts = {};\n    co.forEach(o => catCounts[o.category]=(catCounts[o.category]||0)+1);\n    const topCategory = Object.entries(catCounts).sort((a,b)=>b[1]-a[1])[0]?.[0]||'none';\n    return {name:c.name,orderCount:co.length,totalSpent,avgOrder:co.length?Math.round(totalSpent/co.length*10)/10:0,topCategory};\n  }).sort((a,b)=>b.totalSpent-a.totalSpent);\n}\nconst customers=[{id:1,name:'Alice'},{id:2,name:'Bob'},{id:3,name:'Carol'}];\nconst orders=[\n  {customer_id:1,amount:200,category:'Electronics'},{customer_id:1,amount:50,category:'Books'},\n  {customer_id:1,amount:150,category:'Electronics'},{customer_id:2,amount:80,category:'Food'},\n  {customer_id:2,amount:120,category:'Food'},{customer_id:3,amount:500,category:'Electronics'},\n];\nconst report=customerAnalytics(customers,orders);\nreport.forEach(r=>console.log(r.name+': $'+r.totalSpent+', top: '+r.topCategory));\n`,
+          hints: ["The starter code is complete — run it!", "Filter orders per customer, then aggregate", "topCategory: reduce to counts object, find max"],
+          test_cases: [
+            { description: `Carol first ($500, Electronics)`, expected_output: `Carol: $500, top: Electronics` },
+            { description: `Alice second ($400, Electronics)`, expected_output: `Alice: $400, top: Electronics` },
+            { description: `Bob third ($200, Food)`, expected_output: `Bob: $200, top: Food` },
+          ],
+        },
+      ],
+    },
+    {
+      id: "sql-u4", track_id: "sql", title: "Subqueries & Window Functions", icon: "layers", order_index: 4,
+      description: `Advanced SQL: subqueries, CTEs, and window functions`,
+      lessons: [
+        {
+          id: "sql-u4-l1", unit_id: "sql-u4", track_id: "sql", type: "challenge", order_index: 1, xp_reward: 150, execution_engine: "browser",
+          title: "Subqueries",
+          explanation_md: `# Subqueries\n\nA subquery is a query inside another query:\n\n\`\`\`sql\n-- Users who placed above-average orders\nSELECT name FROM users\nWHERE id IN (\n  SELECT user_id FROM orders\n  WHERE amount > (SELECT AVG(amount) FROM orders)\n);\n\`\`\`\n\n## Your Task\nWrite \`aboveAvgBuyers(orders, users)\` that returns names of users with at least one order above the average order amount.`,
+          starter_code: `const users  = [{id:1,name:'Alice'},{id:2,name:'Bob'},{id:3,name:'Carol'}];\nconst orders = [\n  {user_id:1, amount:500},\n  {user_id:2, amount:50 },\n  {user_id:3, amount:200},\n  {user_id:1, amount:30 },\n];\n\nfunction aboveAvgBuyers(orders, users) {\n  const avg = orders.reduce((s,o)=>s+o.amount,0) / orders.length;\n  const bigSpenderIds = new Set(orders.filter(o=>o.amount>avg).map(o=>o.user_id));\n  return users.filter(u=>bigSpenderIds.has(u.id)).map(u=>u.name).sort();\n}\n\nconsole.log(aboveAvgBuyers(orders, users).join(', ')); // Alice, Carol\n`,
+          reference_solution: `const users=[{id:1,name:'Alice'},{id:2,name:'Bob'},{id:3,name:'Carol'}];\nconst orders=[{user_id:1,amount:500},{user_id:2,amount:50},{user_id:3,amount:200},{user_id:1,amount:30}];\nfunction aboveAvgBuyers(orders,users){\n  const avg=orders.reduce((s,o)=>s+o.amount,0)/orders.length;\n  const ids=new Set(orders.filter(o=>o.amount>avg).map(o=>o.user_id));\n  return users.filter(u=>ids.has(u.id)).map(u=>u.name).sort();\n}\nconsole.log(aboveAvgBuyers(orders,users).join(', '));\n`,
+          hints: ["Compute avg = sum / count first", "Find orders where amount > avg", 'Use Set for O(1) lookup of user IDs'],
+          test_cases: [{ description: `Alice and Carol qualify`, expected_output: `Alice, Carol` }],
+        },
+        {
+          id: "sql-u4-l2", unit_id: "sql-u4", track_id: "sql", type: "challenge", order_index: 2, xp_reward: 175, execution_engine: "browser",
+          title: "Running Totals (Window Functions)",
+          explanation_md: `# Window Functions\n\nWindow functions compute values across related rows:\n\n\`\`\`sql\n-- Running total\nSELECT date, amount,\n  SUM(amount) OVER (ORDER BY date) as running_total\nFROM sales;\n\n-- Rank by amount\nSELECT name, score,\n  RANK() OVER (ORDER BY score DESC) as rank\nFROM students;\n\`\`\`\n\n## Your Task\nWrite \`runningTotal(sales)\` that adds a \`runningTotal\` field to each sale object.`,
+          starter_code: `const sales = [\n  { date: '2024-01', amount: 100 },\n  { date: '2024-02', amount: 250 },\n  { date: '2024-03', amount: 180 },\n  { date: '2024-04', amount: 320 },\n];\n\nfunction runningTotal(sales) {\n  let total = 0;\n  return sales.map(s => {\n    total += s.amount;\n    return { ...s, runningTotal: total };\n  });\n}\n\nrunningTotal(sales).forEach(s =>\n  console.log(s.date + ': $' + s.amount + ' (total: $' + s.runningTotal + ')')\n);\n`,
+          reference_solution: `const sales=[{date:'2024-01',amount:100},{date:'2024-02',amount:250},{date:'2024-03',amount:180},{date:'2024-04',amount:320}];\nfunction runningTotal(sales) {\n  let total=0;\n  return sales.map(s=>{ total+=s.amount; return {...s,runningTotal:total}; });\n}\nrunningTotal(sales).forEach(s=>console.log(s.date+': $'+s.amount+' (total: $'+s.runningTotal+')'));\n`,
+          hints: ["The code is complete — just run it!", "Keep a running `total` variable, add each amount"],
+          test_cases: [
+            { description: `Jan total: $100`, expected_output: `2024-01: $100 (total: $100)` },
+            { description: `Feb total: $350`, expected_output: `2024-02: $250 (total: $350)` },
+            { description: `Apr total: $850`, expected_output: `2024-04: $320 (total: $850)` },
+          ],
+        },
+        {
+          id: "sql-u4-l3", unit_id: "sql-u4", track_id: "sql", type: "challenge", order_index: 3, xp_reward: 200, execution_engine: "browser",
+          title: "RANK & DENSE_RANK",
+          explanation_md: `# RANK Functions\n\n\`\`\`sql\nSELECT name, score,\n  RANK() OVER (ORDER BY score DESC) as rank,\n  DENSE_RANK() OVER (ORDER BY score DESC) as dense_rank\nFROM scores;\n\n-- RANK: gaps after ties (1,1,3)\n-- DENSE_RANK: no gaps (1,1,2)\n\`\`\`\n\n## Your Task\nWrite \`rankScores(scores)\` that returns items with both \`rank\` and \`denseRank\` added.`,
+          starter_code: `function rankScores(scores) {\n  const sorted = [...scores].sort((a, b) => b.score - a.score);\n  let rank = 0, denseRank = 0, lastScore = null, gap = 0;\n  return sorted.map(item => {\n    rank++;\n    if (item.score !== lastScore) {\n      denseRank++;\n      gap = 0;\n    } else {\n      gap++;\n      rank += gap - 1;\n    }\n    lastScore = item.score;\n    return { ...item, rank: rank - gap, denseRank };\n  });\n}\n\nconst scores = [\n  { name: 'Alice', score: 95 },\n  { name: 'Bob',   score: 80 },\n  { name: 'Carol', score: 95 },\n  { name: 'Dave',  score: 70 },\n];\n\n// Simpler correct implementation\nfunction rankScores2(scores) {\n  const sorted = [...scores].sort((a,b)=>b.score-a.score);\n  const uniqueSorted = [...new Set(sorted.map(s=>s.score))].sort((a,b)=>b-a);\n  return sorted.map(item => ({\n    ...item,\n    rank: sorted.filter(s=>s.score>item.score).length + 1,\n    denseRank: uniqueSorted.indexOf(item.score) + 1,\n  }));\n}\n\nrankScores2(scores).forEach(r =>\n  console.log(r.name + ': rank=' + r.rank + ', dense=' + r.denseRank)\n);\n`,
+          reference_solution: `function rankScores2(scores) {\n  const sorted=[...scores].sort((a,b)=>b.score-a.score);\n  const unique=[...new Set(sorted.map(s=>s.score))].sort((a,b)=>b-a);\n  return sorted.map(item=>({...item,rank:sorted.filter(s=>s.score>item.score).length+1,denseRank:unique.indexOf(item.score)+1}));\n}\nconst scores=[{name:'Alice',score:95},{name:'Bob',score:80},{name:'Carol',score:95},{name:'Dave',score:70}];\nrankScores2(scores).forEach(r=>console.log(r.name+': rank='+r.rank+', dense='+r.denseRank));\n`,
+          hints: ["The starter code has rankScores2 which is correct — use it!", "rank = count of items with higher score + 1", 'denseRank = position in unique sorted scores'],
+          test_cases: [
+            { description: `Alice: rank=1, dense=1`, expected_output: `Alice: rank=1, dense=1` },
+            { description: `Bob: rank=3, dense=2`, expected_output: `Bob: rank=3, dense=2` },
+            { description: `Dave: rank=4, dense=3`, expected_output: `Dave: rank=4, dense=3` },
+          ],
+        },
+        {
+          id: "sql-u4-l4", unit_id: "sql-u4", track_id: "sql", type: "boss", order_index: 4, xp_reward: 600, execution_engine: "browser",
+          title: "Boss: Full Analytics Pipeline",
+          explanation_md: `# Boss: Full Analytics Pipeline\n\nBuild a complete analytics pipeline combining everything:\n1. JOIN orders with products\n2. GROUP BY product category\n3. Compute running total across time\n4. Rank categories by revenue\n5. Filter to top 3\n\nReturn ranked category report.`,
+          starter_code: `function analyticsPipeline(orders, products) {\n  // Step 1: Join orders with products\n  const pMap = Object.fromEntries(products.map(p=>[p.id, p]));\n  const enriched = orders.map(o => ({...o, ...pMap[o.product_id]}));\n\n  // Step 2: Group by category and sum revenue\n  const catRevenue = {};\n  enriched.forEach(o => {\n    catRevenue[o.category] = (catRevenue[o.category]||0) + o.amount;\n  });\n\n  // Step 3: Sort by revenue, add rank, return top 3\n  const sorted = Object.entries(catRevenue)\n    .sort(([,a],[,b]) => b-a)\n    .map(([category, revenue], i) => ({rank: i+1, category, revenue}));\n\n  return sorted.slice(0, 3);\n}\n\nconst products = [\n  {id:1, name:'Laptop',   category:'Electronics', price:999},\n  {id:2, name:'T-Shirt',  category:'Clothing',    price:29 },\n  {id:3, name:'Cookbook', category:'Books',       price:25 },\n  {id:4, name:'Phone',    category:'Electronics', price:699},\n  {id:5, name:'Jeans',    category:'Clothing',    price:59 },\n];\nconst orders = [\n  {product_id:1,amount:999},{product_id:4,amount:699},\n  {product_id:1,amount:999},{product_id:2,amount:29},\n  {product_id:5,amount:59},{product_id:3,amount:25},\n  {product_id:2,amount:29},{product_id:5,amount:59},\n];\n\nconst report = analyticsPipeline(orders, products);\nreport.forEach(r => console.log('#'+r.rank+' '+r.category+': $'+r.revenue));\n`,
+          reference_solution: `function analyticsPipeline(orders,products){\n  const pMap=Object.fromEntries(products.map(p=>[p.id,p]));\n  const enriched=orders.map(o=>({...o,...pMap[o.product_id]}));\n  const catRevenue={};\n  enriched.forEach(o=>{catRevenue[o.category]=(catRevenue[o.category]||0)+o.amount;});\n  return Object.entries(catRevenue).sort(([,a],[,b])=>b-a).map(([category,revenue],i)=>({rank:i+1,category,revenue})).slice(0,3);\n}\nconst products=[{id:1,name:'Laptop',category:'Electronics',price:999},{id:2,name:'T-Shirt',category:'Clothing',price:29},{id:3,name:'Cookbook',category:'Books',price:25},{id:4,name:'Phone',category:'Electronics',price:699},{id:5,name:'Jeans',category:'Clothing',price:59}];\nconst orders=[{product_id:1,amount:999},{product_id:4,amount:699},{product_id:1,amount:999},{product_id:2,amount:29},{product_id:5,amount:59},{product_id:3,amount:25},{product_id:2,amount:29},{product_id:5,amount:59}];\nconst report=analyticsPipeline(orders,products);\nreport.forEach(r=>console.log('#'+r.rank+' '+r.category+': $'+r.revenue));\n`,
+          hints: ["The starter code is complete — run it!", "Join via product map, group by category, sort descending", 'Slice to top 3'],
+          test_cases: [
+            { description: `#1 Electronics: $2697`, expected_output: `#1 Electronics: $2697` },
+            { description: `#2 Clothing: $176`, expected_output: `#2 Clothing: $176` },
+            { description: `#3 Books: $25`, expected_output: `#3 Books: $25` },
+          ],
+        },
+      ],
+    },
+  ],
+};

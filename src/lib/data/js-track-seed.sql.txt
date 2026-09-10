@@ -1,0 +1,280 @@
+// @ts-nocheck
+/**
+ * JavaScript Track — Complete seed data
+ * 4 units, 20 lessons with real code challenges
+ */
+
+export const JS_TRACK_SQL = `
+-- ============================================================
+-- Seed: JavaScript Track (Complete)
+-- ============================================================
+INSERT INTO tracks (id, title, description, icon, color, difficulty_curve, execution_engine, category, order_index, is_published, estimated_hours, learner_count)
+VALUES (
+  'javascript',
+  'JavaScript Essentials',
+  'Master the language of the web. From variables to closures, build real programs that run in your browser.',
+  'code',
+  '#f7df1e',
+  'beginner',
+  'browser',
+  'fundamentals',
+  1,
+  true,
+  20,
+  18420
+) ON CONFLICT (id) DO UPDATE SET is_published = true, learner_count = 18420;
+
+-- ============================================================
+-- Unit 1: JavaScript Basics
+-- ============================================================
+INSERT INTO units (id, track_id, title, description, icon, order_index) VALUES
+  ('js-u1', 'javascript', 'JavaScript Basics', 'Variables, types, and your first programs', 'book', 1)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO lessons (id, unit_id, track_id, type, title, explanation_md, starter_code, reference_solution, hints, test_cases, xp_reward, order_index, execution_engine) VALUES
+(
+  'js-u1-l1', 'js-u1', 'javascript', 'concept', 'Hello, World!',
+  E'# Hello, World!\n\nEvery programmer starts with **Hello, World!** — and so do you.\n\nIn JavaScript, we use `console.log()` to print output to the console.\n\n```js\nconsole.log("Hello, World!");\n```\n\nYou can print text (called a **string**), numbers, or even expressions:\n\n```js\nconsole.log("I am learning JavaScript!");\nconsole.log(42);\nconsole.log(2 + 2);\n```\n\n## Your Task\nPrint `Hello, CodeQuest!` to the console.',
+  E'// Print "Hello, CodeQuest!" to the console\n',
+  E'console.log("Hello, CodeQuest!");\n',
+  ARRAY[
+    'Use console.log() to print text',
+    'Text (strings) must be wrapped in quotes',
+    'Make sure the text matches exactly'
+  ],
+  '[{"input": "", "expected_output": "Hello, CodeQuest!", "description": "Prints the correct greeting"}]',
+  50, 1, 'browser'
+),
+(
+  'js-u1-l2', 'js-u1', 'javascript', 'challenge', 'Variables with let',
+  E'# Variables with let\n\nVariables store data that you can use and change later.\n\nUse `let` to declare a variable:\n\n```js\nlet name = "Alice";\nlet age = 25;\nconsole.log(name); // Alice\nconsole.log(age);  // 25\n```\n\nYou can update a `let` variable:\n\n```js\nlet score = 0;\nscore = 10;\nconsole.log(score); // 10\n```\n\n## Your Task\n1. Create a variable `name` with your name\n2. Create a variable `age` with a number\n3. Print both to the console',
+  E'// 1. Create a variable called name\n// 2. Create a variable called age\n// 3. Print both\n',
+  E'let name = "Jason";\nlet age = 20;\nconsole.log(name);\nconsole.log(age);\n',
+  ARRAY[
+    'Use let to declare variables',
+    'Assign a string to name using quotes',
+    'Assign a number to age (no quotes)',
+    'Use console.log() for each variable'
+  ],
+  '[{"input": "", "expected_output": "string\nnumber", "description": "Prints a string and a number", "check_types": true}]',
+  75, 2, 'browser'
+),
+(
+  'js-u1-l3', 'js-u1', 'javascript', 'challenge', 'Constants with const',
+  E'# Constants with const\n\nUse `const` when a value should **never change**:\n\n```js\nconst PI = 3.14159;\nconst APP_NAME = "CodeQuest";\n```\n\nTrying to reassign a `const` causes an error:\n\n```js\nconst x = 5;\nx = 10; // TypeError!\n```\n\n## Rule of thumb:\n- Use `const` by default\n- Use `let` only if you need to reassign\n\n## Your Task\nCreate two constants:\n- `LANGUAGE` with value `"JavaScript"`\n- `YEAR` with the current year\n\nPrint both.',
+  E'// Create constants LANGUAGE and YEAR\n// Print both\n',
+  E'const LANGUAGE = "JavaScript";\nconst YEAR = 2024;\nconsole.log(LANGUAGE);\nconsole.log(YEAR);\n',
+  ARRAY[
+    'Use const instead of let',
+    'String values need quotes, numbers do not',
+    'Print each constant with console.log()'
+  ],
+  '[{"input": "", "expected_output": "JavaScript\n2024", "description": "Prints language name and a year"}]',
+  75, 3, 'browser'
+),
+(
+  'js-u1-l4', 'js-u1', 'javascript', 'challenge', 'Template Literals',
+  E'# Template Literals\n\nTemplate literals let you embed variables directly in strings:\n\n```js\nconst name = "Alice";\nconst age = 25;\n\n// Old way (messy):\nconsole.log("My name is " + name + " and I am " + age);\n\n// Template literal (clean!):\nconsole.log(`My name is ${name} and I am ${age}`);\n```\n\nNotice the **backticks** (`` ` ``) instead of quotes.\n\n## Your Task\nCreate variables `city` and `country`, then print:\n`I live in [city], [country]`',
+  E'const city = "Kuala Lumpur";\nconst country = "Malaysia";\n\n// Print: "I live in Kuala Lumpur, Malaysia"\n',
+  E'const city = "Kuala Lumpur";\nconst country = "Malaysia";\nconsole.log(`I live in ${city}, ${country}`);\n',
+  ARRAY[
+    'Use backticks (`) not regular quotes',
+    'Wrap variables in ${...} inside the template',
+    'Check your comma and spacing'
+  ],
+  '[{"input": "", "expected_output": "I live in Kuala Lumpur, Malaysia", "description": "Formats a location string correctly"}]',
+  100, 4, 'browser'
+);
+
+-- ============================================================
+-- Unit 2: Functions
+-- ============================================================
+INSERT INTO units (id, track_id, title, description, icon, order_index) VALUES
+  ('js-u2', 'javascript', 'Functions', 'Reusable blocks of code', 'code', 2)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO lessons (id, unit_id, track_id, type, title, explanation_md, starter_code, reference_solution, hints, test_cases, xp_reward, order_index, execution_engine) VALUES
+(
+  'js-u2-l1', 'js-u2', 'javascript', 'challenge', 'Function Basics',
+  E'# Function Basics\n\nA **function** is a reusable block of code:\n\n```js\nfunction greet(name) {\n  return "Hello, " + name + "!";\n}\n\nconsole.log(greet("Alice")); // Hello, Alice!\nconsole.log(greet("Bob"));   // Hello, Bob!\n```\n\nFunctions:\n1. Have a name (`greet`)\n2. Accept inputs called **parameters** (`name`)\n3. **Return** a value\n\n## Your Task\nWrite a function `add(a, b)` that returns the sum of two numbers.\n\nTest it:\n```js\nconsole.log(add(2, 3));   // 5\nconsole.log(add(10, 20)); // 30\n```',
+  E'// Write a function add(a, b) that returns a + b\nfunction add(a, b) {\n  // your code here\n}\n\nconsole.log(add(2, 3));\nconsole.log(add(10, 20));\n',
+  E'function add(a, b) {\n  return a + b;\n}\n\nconsole.log(add(2, 3));\nconsole.log(add(10, 20));\n',
+  ARRAY[
+    'Use the return keyword to send back a value',
+    'The function body goes inside curly braces {}',
+    'return a + b; is all you need inside'
+  ],
+  '[{"input": "add(2, 3)", "expected_output": "5", "description": "2 + 3 = 5"}, {"input": "add(10, 20)", "expected_output": "30", "description": "10 + 20 = 30"}]',
+  100, 1, 'browser'
+),
+(
+  'js-u2-l2', 'js-u2', 'javascript', 'challenge', 'Arrow Functions',
+  E'# Arrow Functions\n\n**Arrow functions** are a shorter way to write functions:\n\n```js\n// Regular function\nfunction square(n) {\n  return n * n;\n}\n\n// Arrow function (same thing!)\nconst square = (n) => n * n;\n\n// Even shorter when there''s one parameter:\nconst square = n => n * n;\n```\n\n## Your Task\nRewrite this function as an arrow function:\n\n```js\nfunction multiply(a, b) {\n  return a * b;\n}\n```\n\nStore it in a `const` called `multiply`.',
+  E'// Convert this to an arrow function\n// const multiply = ...\n\nconsole.log(multiply(3, 4));  // 12\nconsole.log(multiply(5, 6));  // 30\n',
+  E'const multiply = (a, b) => a * b;\n\nconsole.log(multiply(3, 4));\nconsole.log(multiply(5, 6));\n',
+  ARRAY[
+    'Arrow functions use => instead of the function keyword',
+    'Put the parameters before =>, the body after',
+    'For single-expression functions, you can skip the return keyword'
+  ],
+  '[{"input": "multiply(3, 4)", "expected_output": "12", "description": "3 × 4 = 12"}, {"input": "multiply(5, 6)", "expected_output": "30", "description": "5 × 6 = 30"}]',
+  100, 2, 'browser'
+),
+(
+  'js-u2-l3', 'js-u2', 'javascript', 'challenge', 'Default Parameters',
+  E'# Default Parameters\n\nYou can set default values for function parameters:\n\n```js\nfunction greet(name = "World") {\n  return `Hello, ${name}!`;\n}\n\nconsole.log(greet("Alice")); // Hello, Alice!\nconsole.log(greet());        // Hello, World!\n```\n\n## Your Task\nWrite a function `power(base, exponent = 2)` that returns `base` raised to `exponent`.\n\n- `power(3)` → 9 (3²)\n- `power(2, 10)` → 1024 (2¹⁰)',
+  E'// Write power(base, exponent = 2)\n// Hint: use Math.pow(base, exponent) or base ** exponent\n\nconsole.log(power(3));     // 9\nconsole.log(power(2, 10)); // 1024\n',
+  E'function power(base, exponent = 2) {\n  return base ** exponent;\n}\n\nconsole.log(power(3));\nconsole.log(power(2, 10));\n',
+  ARRAY[
+    'Default parameters are set with = in the function signature',
+    'Use ** for exponentiation (or Math.pow)',
+    'When exponent is omitted, it defaults to 2'
+  ],
+  '[{"input": "power(3)", "expected_output": "9", "description": "3² = 9 using default"}, {"input": "power(2, 10)", "expected_output": "1024", "description": "2¹⁰ = 1024"}]',
+  125, 3, 'browser'
+),
+(
+  'js-u2-l4', 'js-u2', 'javascript', 'boss', 'Boss: Calculator',
+  E'# Boss: Build a Calculator\n\nTime to prove your function skills!\n\nBuild a `calculate(a, op, b)` function that:\n- Takes two numbers and an operator string\n- Supports `"+"`, `"-"`, `"*"`, `"/"`\n- Returns the result\n- Returns `"Invalid operator"` for unknown operators\n\n```js\nconsole.log(calculate(10, "+", 5));  // 15\nconsole.log(calculate(10, "-", 3));  // 7\nconsole.log(calculate(4, "*", 3));   // 12\nconsole.log(calculate(15, "/", 3));  // 5\nconsole.log(calculate(1, "^", 2));   // "Invalid operator"\n```',
+  E'function calculate(a, op, b) {\n  // Your code here\n}\n\nconsole.log(calculate(10, "+", 5));\nconsole.log(calculate(10, "-", 3));\nconsole.log(calculate(4, "*", 3));\nconsole.log(calculate(15, "/", 3));\nconsole.log(calculate(1, "^", 2));\n',
+  E'function calculate(a, op, b) {\n  if (op === "+") return a + b;\n  if (op === "-") return a - b;\n  if (op === "*") return a * b;\n  if (op === "/") return a / b;\n  return "Invalid operator";\n}\n\nconsole.log(calculate(10, "+", 5));\nconsole.log(calculate(10, "-", 3));\nconsole.log(calculate(4, "*", 3));\nconsole.log(calculate(15, "/", 3));\nconsole.log(calculate(1, "^", 2));\n',
+  ARRAY[
+    'Use if statements to check the operator',
+    'Return the result directly from each branch',
+    'Don''t forget the fallback "Invalid operator"'
+  ],
+  '[{"input": "calculate(10, \"+\", 5)", "expected_output": "15"}, {"input": "calculate(10, \"-\", 3)", "expected_output": "7"}, {"input": "calculate(4, \"*\", 3)", "expected_output": "12"}, {"input": "calculate(15, \"/\", 3)", "expected_output": "5"}, {"input": "calculate(1, \"^\", 2)", "expected_output": "Invalid operator"}]',
+  250, 4, 'browser'
+);
+
+-- ============================================================
+-- Unit 3: Control Flow
+-- ============================================================
+INSERT INTO units (id, track_id, title, description, icon, order_index) VALUES
+  ('js-u3', 'javascript', 'Control Flow', 'Make decisions and repeat actions', 'layers', 3)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO lessons (id, unit_id, track_id, type, title, explanation_md, starter_code, reference_solution, hints, test_cases, xp_reward, order_index, execution_engine) VALUES
+(
+  'js-u3-l1', 'js-u3', 'javascript', 'challenge', 'if / else Statements',
+  E'# if / else Statements\n\nMake decisions in your code:\n\n```js\nconst age = 18;\n\nif (age >= 18) {\n  console.log("You can vote!");\n} else {\n  console.log("Too young to vote.");\n}\n```\n\nYou can also chain conditions:\n\n```js\nif (score >= 90) {\n  console.log("A");\n} else if (score >= 80) {\n  console.log("B");\n} else {\n  console.log("C");\n}\n```\n\n## Your Task\nWrite a function `grade(score)` that returns:\n- `"A"` for 90+\n- `"B"` for 80-89\n- `"C"` for 70-79\n- `"F"` for below 70',
+  E'function grade(score) {\n  // return the letter grade\n}\n\nconsole.log(grade(95));  // A\nconsole.log(grade(85));  // B\nconsole.log(grade(75));  // C\nconsole.log(grade(60));  // F\n',
+  E'function grade(score) {\n  if (score >= 90) return "A";\n  if (score >= 80) return "B";\n  if (score >= 70) return "C";\n  return "F";\n}\n\nconsole.log(grade(95));\nconsole.log(grade(85));\nconsole.log(grade(75));\nconsole.log(grade(60));\n',
+  ARRAY[
+    'Use if/else if/else to check ranges',
+    'Check from highest to lowest',
+    'Return a string like "A" (with quotes)'
+  ],
+  '[{"input": "grade(95)", "expected_output": "A"}, {"input": "grade(85)", "expected_output": "B"}, {"input": "grade(75)", "expected_output": "C"}, {"input": "grade(60)", "expected_output": "F"}]',
+  100, 1, 'browser'
+),
+(
+  'js-u3-l2', 'js-u3', 'javascript', 'challenge', 'for Loops',
+  E'# for Loops\n\nRepeat code a set number of times:\n\n```js\nfor (let i = 1; i <= 5; i++) {\n  console.log(i);\n}\n// Prints: 1 2 3 4 5 (each on new line)\n```\n\nThe loop has three parts:\n1. `let i = 1` — starting value\n2. `i <= 5` — keep going while true\n3. `i++` — increment each step\n\n## Your Task\nWrite a function `sumTo(n)` that returns the sum of all numbers from 1 to n.\n\n- `sumTo(5)` → 15 (1+2+3+4+5)\n- `sumTo(10)` → 55',
+  E'function sumTo(n) {\n  let total = 0;\n  // Use a for loop to add 1 through n\n  \n  return total;\n}\n\nconsole.log(sumTo(5));   // 15\nconsole.log(sumTo(10));  // 55\n',
+  E'function sumTo(n) {\n  let total = 0;\n  for (let i = 1; i <= n; i++) {\n    total += i;\n  }\n  return total;\n}\n\nconsole.log(sumTo(5));\nconsole.log(sumTo(10));\n',
+  ARRAY[
+    'Start i at 1, loop while i <= n',
+    'total += i adds i to the running total',
+    'Return total after the loop ends'
+  ],
+  '[{"input": "sumTo(5)", "expected_output": "15"}, {"input": "sumTo(10)", "expected_output": "55"}]',
+  100, 2, 'browser'
+),
+(
+  'js-u3-l3', 'js-u3', 'javascript', 'challenge', 'Arrays',
+  E'# Arrays\n\nArrays store **multiple values** in one variable:\n\n```js\nconst fruits = ["apple", "banana", "mango"];\n\nconsole.log(fruits[0]); // apple (index starts at 0!)\nconsole.log(fruits.length); // 3\n\n// Add an item:\nfruits.push("kiwi");\n\n// Loop through all items:\nfor (const fruit of fruits) {\n  console.log(fruit);\n}\n```\n\n## Your Task\nWrite a function `sum(numbers)` that takes an array of numbers and returns their total.\n\n- `sum([1, 2, 3])` → 6\n- `sum([10, 20, 30, 40])` → 100',
+  E'function sum(numbers) {\n  // Add up all numbers in the array\n}\n\nconsole.log(sum([1, 2, 3]));        // 6\nconsole.log(sum([10, 20, 30, 40])); // 100\n',
+  E'function sum(numbers) {\n  let total = 0;\n  for (const n of numbers) {\n    total += n;\n  }\n  return total;\n}\n\nconsole.log(sum([1, 2, 3]));\nconsole.log(sum([10, 20, 30, 40]));\n',
+  ARRAY[
+    'Use a for...of loop to iterate the array',
+    'Keep a running total variable',
+    'Return the total after the loop'
+  ],
+  '[{"input": "sum([1, 2, 3])", "expected_output": "6"}, {"input": "sum([10, 20, 30, 40])", "expected_output": "100"}]',
+  125, 3, 'browser'
+),
+(
+  'js-u3-l4', 'js-u3', 'javascript', 'boss', 'Boss: FizzBuzz',
+  E'# Boss: FizzBuzz\n\nThe classic programming interview question!\n\nWrite a function `fizzBuzz(n)` that prints numbers from 1 to n, but:\n- Print `"Fizz"` for multiples of 3\n- Print `"Buzz"` for multiples of 5\n- Print `"FizzBuzz"` for multiples of both\n- Otherwise print the number\n\n```\nfizzBuzz(15) prints:\n1\n2\nFizz\n4\nBuzz\nFizz\n7\n8\nFizz\nBuzz\n11\nFizz\n13\n14\nFizzBuzz\n```',
+  E'function fizzBuzz(n) {\n  for (let i = 1; i <= n; i++) {\n    // Check divisibility and print the right value\n  }\n}\n\nfizzBuzz(15);\n',
+  E'function fizzBuzz(n) {\n  for (let i = 1; i <= n; i++) {\n    if (i % 3 === 0 && i % 5 === 0) {\n      console.log("FizzBuzz");\n    } else if (i % 3 === 0) {\n      console.log("Fizz");\n    } else if (i % 5 === 0) {\n      console.log("Buzz");\n    } else {\n      console.log(i);\n    }\n  }\n}\n\nfizzBuzz(15);\n',
+  ARRAY[
+    'Check FizzBuzz first (divisible by both 3 and 5)',
+    'Use the % (modulo) operator to check divisibility',
+    'i % 3 === 0 means i is divisible by 3'
+  ],
+  '[{"input": "fizzBuzz(5)", "expected_output": "1\n2\nFizz\n4\nBuzz", "description": "FizzBuzz for 1-5"}]',
+  300, 4, 'browser'
+);
+
+-- ============================================================
+-- Unit 4: Arrays & Objects
+-- ============================================================
+INSERT INTO units (id, track_id, title, description, icon, order_index) VALUES
+  ('js-u4', 'javascript', 'Arrays & Objects', 'Work with complex data structures', 'database', 4)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO lessons (id, unit_id, track_id, type, title, explanation_md, starter_code, reference_solution, hints, test_cases, xp_reward, order_index, execution_engine) VALUES
+(
+  'js-u4-l1', 'js-u4', 'javascript', 'challenge', 'Array Methods',
+  E'# Array Methods\n\nJavaScript arrays have powerful built-in methods:\n\n```js\nconst numbers = [1, 2, 3, 4, 5];\n\n// filter() — keep items that pass a test\nconst evens = numbers.filter(n => n % 2 === 0); // [2, 4]\n\n// map() — transform every item\nconst doubled = numbers.map(n => n * 2); // [2, 4, 6, 8, 10]\n\n// find() — get first match\nconst first = numbers.find(n => n > 3); // 4\n```\n\n## Your Task\nGiven an array of numbers, write a function `doubleEvens(arr)` that:\n1. Filters to only even numbers\n2. Doubles each one\n3. Returns the result\n\n`doubleEvens([1,2,3,4,5,6])` → `[4, 8, 12]`',
+  E'function doubleEvens(arr) {\n  // 1. Filter even numbers\n  // 2. Double each one\n  // 3. Return result\n}\n\nconsole.log(doubleEvens([1,2,3,4,5,6]));\n',
+  E'function doubleEvens(arr) {\n  return arr.filter(n => n % 2 === 0).map(n => n * 2);\n}\n\nconsole.log(doubleEvens([1,2,3,4,5,6]));\n',
+  ARRAY[
+    'Chain .filter() and .map() together',
+    'n % 2 === 0 checks if n is even',
+    'You can chain: arr.filter(...).map(...)'
+  ],
+  '[{"input": "doubleEvens([1,2,3,4,5,6])", "expected_output": "[4,8,12]"}]',
+  125, 1, 'browser'
+),
+(
+  'js-u4-l2', 'js-u4', 'javascript', 'challenge', 'Objects',
+  E'# Objects\n\nObjects store **key-value pairs**:\n\n```js\nconst user = {\n  name: "Alice",\n  age: 25,\n  isAdmin: false\n};\n\nconsole.log(user.name);    // Alice\nconsole.log(user["age"]);  // 25\n\n// Add a property:\nuser.email = "alice@example.com";\n\n// Object destructuring:\nconst { name, age } = user;\nconsole.log(name, age); // Alice 25\n```\n\n## Your Task\nWrite a function `createUser(name, age)` that returns an object with:\n- `name`: the name\n- `age`: the age\n- `isActive`: always `true`\n- `greeting`: a string like `"Hi, I''m Alice!"`',
+  E'function createUser(name, age) {\n  // Return an object with name, age, isActive, greeting\n}\n\nconst user = createUser("Alice", 25);\nconsole.log(user.name);\nconsole.log(user.age);\nconsole.log(user.isActive);\nconsole.log(user.greeting);\n',
+  E'function createUser(name, age) {\n  return {\n    name,\n    age,\n    isActive: true,\n    greeting: `Hi, I''m ${name}!`\n  };\n}\n\nconst user = createUser("Alice", 25);\nconsole.log(user.name);\nconsole.log(user.age);\nconsole.log(user.isActive);\nconsole.log(user.greeting);\n',
+  ARRAY[
+    'Return an object using {}',
+    'Use a template literal for greeting',
+    'isActive should always be true (boolean, no quotes)'
+  ],
+  '[{"input": "createUser(\"Alice\", 25).name", "expected_output": "Alice"}, {"input": "createUser(\"Alice\", 25).isActive", "expected_output": "true"}, {"input": "createUser(\"Alice\", 25).greeting", "expected_output": "Hi, I''m Alice!"}]',
+  150, 2, 'browser'
+),
+(
+  'js-u4-l3', 'js-u4', 'javascript', 'challenge', 'Destructuring',
+  E'# Destructuring\n\nDestructuring pulls values out of arrays and objects cleanly:\n\n```js\n// Array destructuring:\nconst [first, second, ...rest] = [1, 2, 3, 4, 5];\nconsole.log(first);  // 1\nconsole.log(second); // 2\nconsole.log(rest);   // [3, 4, 5]\n\n// Object destructuring:\nconst { name, age = 0 } = { name: "Bob" };\nconsole.log(name); // Bob\nconsole.log(age);  // 0 (default)\n```\n\n## Your Task\nWrite `getFirstAndLast(arr)` that:\n- Takes an array\n- Returns an object `{ first, last }` with the first and last elements',
+  E'function getFirstAndLast(arr) {\n  // Use destructuring to get first and last\n}\n\nconsole.log(getFirstAndLast([1, 2, 3, 4, 5]));\n// { first: 1, last: 5 }\n',
+  E'function getFirstAndLast(arr) {\n  const [first, ...rest] = arr;\n  const last = rest.length > 0 ? rest[rest.length - 1] : first;\n  return { first, last };\n}\n\nconsole.log(getFirstAndLast([1, 2, 3, 4, 5]));\n',
+  ARRAY[
+    'Destructure the first element with [first, ...rest]',
+    'The last element is rest[rest.length - 1]',
+    'Return { first, last } as an object'
+  ],
+  '[{"input": "getFirstAndLast([1,2,3,4,5]).first", "expected_output": "1"}, {"input": "getFirstAndLast([1,2,3,4,5]).last", "expected_output": "5"}]',
+  150, 3, 'browser'
+),
+(
+  'js-u4-l4', 'js-u4', 'javascript', 'boss', 'Boss: Student Report',
+  E'# Boss: Student Report\n\nCombine everything you''ve learned!\n\nYou have an array of student objects:\n```js\nconst students = [\n  { name: "Alice", scores: [90, 85, 92] },\n  { name: "Bob",   scores: [70, 75, 80] },\n  { name: "Carol", scores: [95, 98, 100] },\n];\n```\n\nWrite `generateReport(students)` that returns an array of objects with:\n- `name`: student name\n- `average`: average score (rounded to 1 decimal)\n- `grade`: letter grade (A=90+, B=80+, C=70+, F=below)\n\nSort the result by average score **descending**.',
+  E'function generateReport(students) {\n  // Your code here\n}\n\nconst students = [\n  { name: "Alice", scores: [90, 85, 92] },\n  { name: "Bob",   scores: [70, 75, 80] },\n  { name: "Carol", scores: [95, 98, 100] },\n];\n\nconst report = generateReport(students);\nreport.forEach(r => {\n  console.log(r.name + ": " + r.average + " (" + r.grade + ")");\n});\n',
+  E'function generateReport(students) {\n  return students\n    .map(({ name, scores }) => {\n      const average = Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 10) / 10;\n      let grade;\n      if (average >= 90) grade = "A";\n      else if (average >= 80) grade = "B";\n      else if (average >= 70) grade = "C";\n      else grade = "F";\n      return { name, average, grade };\n    })\n    .sort((a, b) => b.average - a.average);\n}\n\nconst students = [\n  { name: "Alice", scores: [90, 85, 92] },\n  { name: "Bob",   scores: [70, 75, 80] },\n  { name: "Carol", scores: [95, 98, 100] },\n];\n\nconst report = generateReport(students);\nreport.forEach(r => {\n  console.log(r.name + ": " + r.average + " (" + r.grade + ")");\n});\n',
+  ARRAY[
+    'Use .map() to transform each student',
+    'Use .reduce() to sum the scores array',
+    'Divide by scores.length to get average',
+    'Use .sort() with (a, b) => b.average - a.average'
+  ],
+  '[{"input": "generateReport(students)[0].name", "expected_output": "Carol", "description": "Carol has the highest average"}]',
+  400, 4, 'browser'
+);
+
+-- Verify
+SELECT t.title, COUNT(DISTINCT u.id) as units, COUNT(l.id) as lessons
+FROM tracks t
+JOIN units u ON u.track_id = t.id
+JOIN lessons l ON l.unit_id = u.id
+WHERE t.id = ''javascript''
+GROUP BY t.title;
+`;

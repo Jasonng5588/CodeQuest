@@ -1,0 +1,175 @@
+import { StaticTrack } from "./lesson-content";
+
+// ─── MySQL Track ────────────────────────────────────────────
+export const MYSQL_TRACK: StaticTrack = {
+  id: "mysql",
+  title: "MySQL",
+  description: `The world's most popular open-source database. Stored procedures, indexes, and more.`,
+  color: "#00758f",
+  difficulty_curve: "intermediate",
+  execution_engine: "judge0",
+  category: "database",
+  order_index: 51,
+  is_published: true,
+  estimated_hours: 14,
+  learner_count: 9300,
+  units: [
+    {
+      id: "mysql-u1", track_id: "mysql", title: "MySQL Fundamentals", description: "Tables, queries, joins, and indexes", icon: "database",order_index: 1,
+      lessons: [
+        {
+          id: "mysql-u1-l1", unit_id: "mysql-u1", track_id: "mysql", type: "concept", title: "MySQL vs SQL",
+          explanation_md: `# MySQL Overview\n\nMySQL is the most popular open-source relational database. It uses standard SQL with MySQL-specific extensions.\n\n## MySQL Data Types\n\`\`\`sql\n-- Integer types\nINT, TINYINT (0-255), BIGINT, SMALLINT\n\n-- String types\nVARCHAR(255)  -- variable length, up to 255\nCHAR(10)      -- fixed length\nTEXT          -- up to 65KB\nLONGTEXT      -- up to 4GB\n\n-- Date/Time\nDATE          -- 2024-01-15\nDATETIME      -- 2024-01-15 10:30:00\nTIMESTAMP     -- auto-updates on row change\n\n-- Numeric\nDECIMAL(10,2) -- exact (use for money!)\nFLOAT, DOUBLE -- approximate\n\`\`\`\n\n## Create Table\n\`\`\`sql\nCREATE TABLE products (\n    id INT PRIMARY KEY AUTO_INCREMENT,\n    name VARCHAR(100) NOT NULL,\n    price DECIMAL(10,2) NOT NULL,\n    stock INT DEFAULT 0,\n    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n);\n\`\`\`\n\n## Your Task\nCalculate the correct column sizes for a user table (simulated in JavaScript):`,
+          starter_code: `// Simulate MySQL column type decisions\nfunction recommendType(field, example) {\n  const value = String(example);\n  if (typeof example === 'number') {\n    if (Number.isInteger(example)) return "INT";\n    return "DECIMAL(10,2)";\n  }\n  if (example instanceof Date) return "TIMESTAMP";\n  if (value.length <= 255) return "VARCHAR(" + Math.max(50, value.length * 3) + ")";\n  return "TEXT";\n}\n\nconst fields = [\n  { name: "user_id", example: 42 },\n  { name: "username", example: "alice" },\n  { name: "price", example: 19.99 },\n  { name: "bio", example: "A".repeat(300) },\n];\n\nfields.forEach(f => {\n  console.log(f.name + ": " + recommendType(f.name, f.example));\n});\n`,
+          reference_solution: `function recommendType(f,e){const v=String(e);if(typeof e==='number'){if(Number.isInteger(e))return"INT";return"DECIMAL(10,2)";}if(e instanceof Date)return"TIMESTAMP";if(v.length<=255)return"VARCHAR("+Math.max(50,v.length*3)+")";return"TEXT";}\nconst fields=[{name:"user_id",example:42},{name:"username",example:"alice"},{name:"price",example:19.99},{name:"bio",example:"A".repeat(300)}];\nfields.forEach(f=>console.log(f.name+": "+recommendType(f.name,f.example)));\n`,
+          hints: ["42 is an integer → INT", "19.99 is a decimal → DECIMAL", 'Long strings → TEXT'],
+          test_cases: [{ description: `price is DECIMAL(10,2)`, expected_output: `price: DECIMAL(10,2)` }],
+          xp_reward: 75, order_index: 1, execution_engine: "judge0",
+        },
+        {
+          id: "mysql-u1-l2", unit_id: "mysql-u1", track_id: "mysql", type: "challenge", title: "MySQL Indexes",
+          explanation_md: `# MySQL Indexes\n\nIndexes dramatically speed up SELECT queries:\n\n\`\`\`sql\n-- Without index: full table scan O(n)\nSELECT * FROM users WHERE email = 'alice@example.com';\n\n-- Create index: O(log n) lookup\nCREATE INDEX idx_email ON users(email);\nCREATE UNIQUE INDEX idx_email ON users(email); -- unique constraint\n\n-- Composite index (for queries with multiple WHERE conditions)\nCREATE INDEX idx_name_age ON users(last_name, age);\n\n-- Show indexes\nSHOW INDEX FROM users;\n\n-- EXPLAIN: see how MySQL executes a query\nEXPLAIN SELECT * FROM users WHERE email = 'test@example.com';\n\`\`\`\n\n## When to Index\n✅ Columns in WHERE, JOIN ON, ORDER BY\n❌ Small tables, columns with few unique values, frequently updated columns\n\n## Your Task\nSimulate index performance comparison:`,
+          starter_code: `// Simulate table scan vs index lookup performance\nfunction tableScans(tableSize, targetRow) {\n  // Without index: check every row\n  let comparisons = 0;\n  for (let i = 0; i < tableSize; i++) {\n    comparisons++;\n    if (i === targetRow) break;\n  }\n  return comparisons;\n}\n\nfunction indexLookup(tableSize, targetRow) {\n  // With B-tree index: O(log n)\n  return Math.ceil(Math.log2(tableSize));\n}\n\nconst tableSize = 1000000; // 1 million rows\nconst targetRow = 750000;  // near the end\n\nconst scanOps = tableScans(tableSize, targetRow);\nconst indexOps = indexLookup(tableSize, targetRow);\n\nconsole.log("Table scan: " + scanOps + " operations");\nconsole.log("Index lookup: " + indexOps + " operations");\nconsole.log("Speedup: " + Math.round(scanOps / indexOps) + "x faster");\n`,
+          reference_solution: `function tableScans(n,t){let c=0;for(let i=0;i<=t;i++)c++;return c;}\nfunction indexLookup(n){return Math.ceil(Math.log2(n));}\nconst n=1000000,t=750000;\nconsole.log("Table scan: "+tableScans(n,t)+" operations");\nconsole.log("Index lookup: "+indexLookup(n)+" operations");\nconsole.log("Speedup: "+Math.round(tableScans(n,t)/indexLookup(n))+"x faster");\n`,
+          hints: ["Table scan checks up to 750, 000 rows", 'Index only needs log2(1000000) ≈ 20 operations'],
+          test_cases: [{ description: `Index is much faster`, expected_output: `Index lookup: 20 operations` }],
+          xp_reward: 125, order_index: 2, execution_engine: "judge0",
+        },
+        {
+          id: "mysql-u1-l3", unit_id: "mysql-u1", track_id: "mysql", type: "challenge", title: "Stored Procedures",
+          explanation_md: `# MySQL Stored Procedures\n\nStored procedures are reusable SQL programs:\n\n\`\`\`sql\nCREATE PROCEDURE get_user_stats(IN user_id INT)\nBEGIN\n    DECLARE total_orders INT;\n    DECLARE total_spent DECIMAL(10,2);\n    \n    SELECT COUNT(*), SUM(amount)\n    INTO total_orders, total_spent\n    FROM orders\n    WHERE orders.user_id = user_id;\n    \n    SELECT total_orders, IFNULL(total_spent, 0.00);\nEND;\n\n-- Call the procedure\nCALL get_user_stats(42);\n\`\`\`\n\n## Benefits\n- Reduced network traffic\n- Reusable logic\n- Better security (grant EXECUTE, not SELECT)\n- Precompiled → faster\n\n## Your Task\nSimulate a stored procedure that computes order statistics:`,
+          starter_code: `// Simulate a MySQL stored procedure\nconst orders = [\n  { userId: 1, amount: 59.99 },\n  { userId: 2, amount: 120.00 },\n  { userId: 1, amount: 34.50 },\n  { userId: 3, amount: 89.99 },\n  { userId: 1, amount: 12.00 },\n  { userId: 2, amount: 75.25 },\n];\n\n// Stored procedure simulation\nfunction getUserStats(userId) {\n  const userOrders = orders.filter(o => o.userId === userId);\n  const totalOrders = userOrders.length;\n  const totalSpent = userOrders.reduce((sum, o) => sum + o.amount, 0);\n  const avgOrder = totalOrders > 0 ? totalSpent / totalOrders : 0;\n  \n  return { totalOrders, totalSpent, avgOrder };\n}\n\n// Call for user 1\nconst stats = getUserStats(1);\nconsole.log("Orders: " + stats.totalOrders);\nconsole.log("Total spent: $" + stats.totalSpent.toFixed(2));\nconsole.log("Average order: $" + stats.avgOrder.toFixed(2));\n`,
+          reference_solution: `const orders=[{userId:1,amount:59.99},{userId:2,amount:120},{userId:1,amount:34.5},{userId:3,amount:89.99},{userId:1,amount:12},{userId:2,amount:75.25}];\nfunction getUserStats(id){const o=orders.filter(x=>x.userId===id);const t=o.reduce((s,x)=>s+x.amount,0);return{totalOrders:o.length,totalSpent:t,avgOrder:o.length?t/o.length:0};}\nconst s=getUserStats(1);\nconsole.log("Orders: "+s.totalOrders);\nconsole.log("Total spent: $"+s.totalSpent.toFixed(2));\nconsole.log("Average order: $"+s.avgOrder.toFixed(2));\n`,
+          hints: ["User 1 has 3 orders: 59.99 + 34.50 + 12.00 = 106.49", 'Average = 106.49 / 3 ≈ 35.50'],
+          test_cases: [{ description: `User 1 has 3 orders totaling $106.49`, expected_output: `Total spent: $106.49` }],
+          xp_reward: 150, order_index: 3, execution_engine: "judge0",
+        },
+        {
+          id: "mysql-u1-l4", unit_id: "mysql-u1", track_id: "mysql", type: "boss", title: "Boss: Query Optimization",
+          explanation_md: `# Boss: MySQL Query Optimization\n\nWrite efficient queries:\n\n## N+1 Problem (Bad)\n\`\`\`sql\n-- 1 query for users:\nSELECT * FROM users;\n-- Then N queries for each user's orders:\nSELECT * FROM orders WHERE user_id = 1;\nSELECT * FROM orders WHERE user_id = 2;\n-- ...N more queries!\n\`\`\`\n\n## JOIN Solution (Good)\n\`\`\`sql\n-- Single query with JOIN:\nSELECT u.name, COUNT(o.id) as order_count, SUM(o.amount) as total\nFROM users u\nLEFT JOIN orders o ON u.id = o.user_id\nGROUP BY u.id, u.name\nHAVING total > 100\nORDER BY total DESC;\n\`\`\`\n\n## Boss Challenge\nSimulate the JOIN to find top spenders:`,
+          starter_code: `const users = [\n  { id: 1, name: "Alice" },\n  { id: 2, name: "Bob" },\n  { id: 3, name: "Charlie" },\n  { id: 4, name: "Diana" },\n];\n\nconst orders = [\n  { userId: 1, amount: 150 },\n  { userId: 1, amount: 89 },\n  { userId: 2, amount: 45 },\n  { userId: 3, amount: 200 },\n  { userId: 3, amount: 175 },\n  { userId: 4, amount: 320 },\n];\n\n// Simulate: SELECT u.name, SUM(o.amount) as total\n// FROM users u LEFT JOIN orders o ON u.id = o.user_id\n// GROUP BY u.id HAVING total > 100 ORDER BY total DESC\n\nconst results = users.map(user => {\n  const userOrders = orders.filter(o => o.userId === user.id);\n  const total = userOrders.reduce((sum, o) => sum + o.amount, 0);\n  return { name: user.name, total };\n}).filter(r => r.total > 100)\n  .sort((a, b) => b.total - a.total);\n\nresults.forEach(r => {\n  console.log(r.name + ": $" + r.total);\n});\n`,
+          reference_solution: `const users=[{id:1,name:"Alice"},{id:2,name:"Bob"},{id:3,name:"Charlie"},{id:4,name:"Diana"}];\nconst orders=[{userId:1,amount:150},{userId:1,amount:89},{userId:2,amount:45},{userId:3,amount:200},{userId:3,amount:175},{userId:4,amount:320}];\nconst r=users.map(u=>{const o=orders.filter(x=>x.userId===u.id);const t=o.reduce((s,x)=>s+x.amount,0);return{name:u.name,total:t};}).filter(x=>x.total>100).sort((a,b)=>b.total-a.total);\nr.forEach(x=>console.log(x.name+": $"+x.total));\n`,
+          hints: ["Alice: 150+89=239, Bob: 45 (excluded), Charlie: 375, Diana: 320", 'Sort by total descending'],
+          test_cases: [{ description: `Charlie has highest spending at $375`, expected_output: `Charlie: $375` }],
+          xp_reward: 500, order_index: 4, execution_engine: "judge0",
+        },
+      ],
+    },
+  ],
+};
+
+// ─── MongoDB Track ──────────────────────────────────────────
+export const MONGODB_TRACK: StaticTrack = {
+  id: "mongodb",
+  title: "MongoDB",
+  description: `Document database for modern apps. BSON, aggregation pipeline, and Atlas.`,
+  color: "#47a248",
+  difficulty_curve: "intermediate",
+  execution_engine: "judge0",
+  category: "database",
+  order_index: 53,
+  is_published: true,
+  estimated_hours: 12,
+  learner_count: 8100,
+  units: [
+    {
+      id: "mongo-u1", track_id: "mongodb", title: "MongoDB Essentials", description: "Documents, CRUD, and aggregation", icon: "database",order_index: 1,
+      lessons: [
+        {
+          id: "mongo-u1-l1", unit_id: "mongo-u1", track_id: "mongodb", type: "concept", title: "Documents & Collections",
+          explanation_md: `# MongoDB: Document Database\n\nMongoDB stores data as **JSON-like documents** (BSON):\n\n\`\`\`json\n{\n  "_id": ObjectId("..."),\n  "name": "Alice",\n  "age": 30,\n  "email": "alice@example.com",\n  "address": {\n    "city": "New York",\n    "zip": "10001"\n  },\n  "tags": ["developer", "admin"],\n  "createdAt": ISODate("2024-01-15")\n}\n\`\`\`\n\n## SQL vs MongoDB\n| SQL | MongoDB |\n|-----|--------|\n| Table | Collection |\n| Row | Document |\n| Column | Field |\n| JOIN | $lookup / embedding |\n| Primary Key | _id field |\n\n## CRUD Operations\n\`\`\`js\n// Insert\ndb.users.insertOne({ name: "Alice", age: 30 })\n\n// Find\ndb.users.find({ age: { $gte: 25 } })\n\n// Update\ndb.users.updateOne({ name: "Alice" }, { $set: { age: 31 } })\n\n// Delete\ndb.users.deleteOne({ name: "Alice" })\n\`\`\`\n\n## Your Task\nSimulate MongoDB document operations:`,
+          starter_code: `// Simulate a MongoDB collection\nclass Collection {\n  constructor() {\n    this.docs = [];\n    this._idCounter = 1;\n  }\n  \n  insertOne(doc) {\n    const newDoc = { _id: this._idCounter++, ...doc };\n    this.docs.push(newDoc);\n    return { insertedId: newDoc._id };\n  }\n  \n  find(query) {\n    return this.docs.filter(doc => {\n      return Object.entries(query).every(([key, value]) => doc[key] === value);\n    });\n  }\n  \n  findOne(query) { return this.find(query)[0] || null; }\n  \n  count(query) { return this.find(query).length; }\n}\n\nconst users = new Collection();\nusers.insertOne({ name: "Alice", role: "admin", age: 30 });\nusers.insertOne({ name: "Bob", role: "user", age: 25 });\nusers.insertOne({ name: "Charlie", role: "user", age: 35 });\n\nconsole.log("Total users: " + users.count({}));\nconsole.log("Admins: " + users.count({ role: "admin" }));\nconsole.log("Found: " + users.findOne({ name: "Bob" }).name);\n`,
+          reference_solution: `class Collection{constructor(){this.docs=[];this._idCounter=1;}insertOne(d){const n={_id:this._idCounter++,...d};this.docs.push(n);return{insertedId:n._id};}find(q){return this.docs.filter(d=>Object.entries(q).every(([k,v])=>d[k]===v));}findOne(q){return this.find(q)[0]||null;}count(q){return this.find(q).length;}}\nconst u=new Collection();u.insertOne({name:"Alice",role:"admin",age:30});u.insertOne({name:"Bob",role:"user",age:25});u.insertOne({name:"Charlie",role:"user",age:35});\nconsole.log("Total users: "+u.count({}));\nconsole.log("Admins: "+u.count({role:"admin"}));\nconsole.log("Found: "+u.findOne({name:"Bob"}).name);\n`,
+          hints: ["3 total users, 1 admin", 'findOne returns the matching document'],
+          test_cases: [{ description: `Total 3 users, 1 admin`, expected_output: `Total users: 3\nAdmins: 1\nFound: Bob` }],
+          xp_reward: 75, order_index: 1, execution_engine: "judge0",
+        },
+        {
+          id: "mongo-u1-l2", unit_id: "mongo-u1", track_id: "mongodb", type: "challenge", title: "Query Operators",
+          explanation_md: `# MongoDB Query Operators\n\n## Comparison\n\`\`\`js\n$eq  → equal\n$ne  → not equal\n$gt  → greater than\n$gte → greater than or equal\n$lt  → less than\n$lte → less than or equal\n$in  → value in array\n\n// Examples:\ndb.users.find({ age: { $gte: 25, $lte: 40 } })   // 25-40\ndb.users.find({ role: { $in: ["admin", "mod"] } }) // admin or mod\n\`\`\`\n\n## Logical\n\`\`\`js\n$and, $or, $not, $nor\n\ndb.users.find({ $or: [ { age: { $lt: 20 } }, { age: { $gt: 60 } } ] })\n\`\`\`\n\n## Your Task\nFilter documents using comparison operators:`,
+          starter_code: `const products = [\n  { name: "Laptop", price: 999, category: "electronics", stock: 50 },\n  { name: "Phone", price: 699, category: "electronics", stock: 120 },\n  { name: "Desk", price: 299, category: "furniture", stock: 30 },\n  { name: "Chair", price: 199, category: "furniture", stock: 75 },\n  { name: "Monitor", price: 399, category: "electronics", stock: 45 },\n];\n\n// $gt: price > 300\nconst expensive = products.filter(p => p.price > 300);\nconsole.log("Price > $300: " + expensive.length);\n\n// $in: category in [electronics]\nconst electronics = products.filter(p => ["electronics"].includes(p.category));\nconsole.log("Electronics: " + electronics.length);\n\n// $gte AND $lte: stock between 40-100\nconst inStock = products.filter(p => p.stock >= 40 && p.stock <= 100);\nconsole.log("Stock 40-100: " + inStock.map(p => p.name).join(", "));\n`,
+          reference_solution: `const p=[{name:"Laptop",price:999,category:"electronics",stock:50},{name:"Phone",price:699,category:"electronics",stock:120},{name:"Desk",price:299,category:"furniture",stock:30},{name:"Chair",price:199,category:"furniture",stock:75},{name:"Monitor",price:399,category:"electronics",stock:45}];\nconsole.log("Price > $300: "+p.filter(x=>x.price>300).length);\nconsole.log("Electronics: "+p.filter(x=>["electronics"].includes(x.category)).length);\nconsole.log("Stock 40-100: "+p.filter(x=>x.stock>=40&&x.stock<=100).map(x=>x.name).join(", "));\n`,
+          hints: ["Price > 300: Laptop(999), Phone(699), Monitor(399) = 3", "Electronics: Laptop, Phone, Monitor = 3", "Stock 40-100: Laptop(50), Monitor(45), Chair(75) = 3"],
+          test_cases: [{ description: `3 products over $300`, expected_output: `Price > $300: 3` }],
+          xp_reward: 125, order_index: 2, execution_engine: "judge0",
+        },
+        {
+          id: "mongo-u1-l3", unit_id: "mongo-u1", track_id: "mongodb", type: "challenge", title: "Aggregation Pipeline",
+          explanation_md: `# MongoDB Aggregation Pipeline\n\nThe aggregation pipeline transforms documents through stages:\n\n\`\`\`js\ndb.orders.aggregate([\n  // Stage 1: Filter\n  { $match: { status: "completed" } },\n  \n  // Stage 2: Group by customer\n  { $group: {\n    _id: "$customerId",\n    totalSpent: { $sum: "$amount" },\n    orderCount: { $sum: 1 }\n  }},\n  \n  // Stage 3: Sort by total spent\n  { $sort: { totalSpent: -1 } },\n  \n  // Stage 4: Take top 5\n  { $limit: 5 },\n  \n  // Stage 5: Add computed field\n  { $addFields: { avgOrder: { $divide: ["$totalSpent", "$orderCount"] } }}\n])\n\`\`\`\n\n## Your Task\nSimulate a MongoDB aggregation pipeline:`,
+          starter_code: `const orders = [\n  { customer: "Alice", amount: 120, status: "completed" },\n  { customer: "Bob", amount: 85, status: "completed" },\n  { customer: "Alice", amount: 200, status: "completed" },\n  { customer: "Charlie", amount: 45, status: "pending" },\n  { customer: "Bob", amount: 150, status: "completed" },\n  { customer: "Alice", amount: 75, status: "completed" },\n];\n\n// Stage 1: $match - completed only\nconst completed = orders.filter(o => o.status === "completed");\n\n// Stage 2: $group by customer\nconst grouped = {};\ncompleted.forEach(o => {\n  if (!grouped[o.customer]) grouped[o.customer] = { total: 0, count: 0 };\n  grouped[o.customer].total += o.amount;\n  grouped[o.customer].count++;\n});\n\n// Stage 3: $sort by total DESC + $addFields avgOrder\nconst results = Object.entries(grouped)\n  .map(([name, data]) => ({ name, total: data.total, avg: data.total / data.count }))\n  .sort((a, b) => b.total - a.total);\n\nresults.forEach(r => {\n  console.log(r.name + ": $" + r.total + " avg $" + r.avg.toFixed(2));\n});\n`,
+          reference_solution: `const orders=[{customer:"Alice",amount:120,status:"completed"},{customer:"Bob",amount:85,status:"completed"},{customer:"Alice",amount:200,status:"completed"},{customer:"Charlie",amount:45,status:"pending"},{customer:"Bob",amount:150,status:"completed"},{customer:"Alice",amount:75,status:"completed"}];\nconst c=orders.filter(o=>o.status==="completed");\nconst g={};\nc.forEach(o=>{if(!g[o.customer])g[o.customer]={total:0,count:0};g[o.customer].total+=o.amount;g[o.customer].count++;});\nconst r=Object.entries(g).map(([n,d])=>({name:n,total:d.total,avg:d.total/d.count})).sort((a,b)=>b.total-a.total);\nr.forEach(x=>console.log(x.name+": $"+x.total+" avg $"+x.avg.toFixed(2)));\n`,
+          hints: ["Alice: 120+200+75=395, Bob: 85+150=235", "Charlie is excluded (pending)", 'Sort: Alice(395) > Bob(235)'],
+          test_cases: [{ description: `Alice has $395 total`, expected_output: `Alice: $395 avg $131.67` }],
+          xp_reward: 175, order_index: 3, execution_engine: "judge0",
+        },
+        {
+          id: "mongo-u1-l4", unit_id: "mongo-u1", track_id: "mongodb", type: "boss", title: "Boss: Schema Design",
+          explanation_md: `# Boss: MongoDB Schema Design\n\nMongoDB's flexible schema requires design decisions:\n\n## Embedding vs Referencing\n\n### Embed (put inside the document)\n\`\`\`json\n{\n  "_id": 1,\n  "user": "Alice",\n  "address": { "city": "NY", "zip": "10001" },\n  "tags": ["premium", "vip"]\n}\n\`\`\`\nBest for: data always needed together, one-to-one, one-to-few\n\n### Reference (store ID only)\n\`\`\`json\n// User doc:\n{ "_id": 1, "name": "Alice", "orderId": [101, 102] }\n\n// Separate orders collection:\n{ "_id": 101, "userId": 1, "amount": 150 }\n\`\`\`\nBest for: large/growing arrays, many-to-many\n\n## Boss Challenge\nDesign a social media schema and count embedded vs referenced relationships:`,
+          starter_code: `// Social media schema design analysis\nconst schema = {\n  user: {\n    _id: "ObjectId",\n    username: "String",           // unique index\n    email: "String",              // unique index  \n    bio: "String",               \n    avatar_url: "String",\n    // Embedded (small, always needed):\n    preferences: {\n      theme: "String",\n      notifications: "Boolean",\n    },\n    follower_count: "Number",    // cached count\n    // Referenced (could be millions):\n    posts: "ObjectId[]",        // references Post collection\n    followers: "ObjectId[]",    // references User collection\n  },\n  post: {\n    _id: "ObjectId",\n    userId: "ObjectId",          // reference to User\n    content: "String",\n    // Embedded (always shown with post):\n    likes: { count: "Number", users: "ObjectId[]" },\n    // Embedded (max ~10 tags):\n    tags: "String[]",\n    createdAt: "Date",\n  }\n};\n\n// Count embedded vs referenced fields\nfunction countDesignDecisions(schema) {\n  const embedded = [\"preferences\", \"likes\", \"tags\"];\n  const referenced = [\"posts\", \"followers\", \"userId\"];\n  console.log("Embedded fields: \" + embedded.length);\n  console.log(\"Referenced fields: \" + referenced.length);\n  console.log(\"Design: \" + (referenced.length > embedded.length ? \"reference-heavy\" : \"embed-heavy\"));\n}\n\ncountDesignDecisions(schema);\n`,
+          reference_solution: `const schema={user:{_id:"ObjectId",username:"String",email:"String",bio:"String",avatar_url:"String",preferences:{theme:"String",notifications:"Boolean"},follower_count:"Number",posts:"ObjectId[]",followers:"ObjectId[]"},post:{_id:"ObjectId",userId:"ObjectId",content:"String",likes:{count:"Number",users:"ObjectId[]"},tags:"String[]",createdAt:"Date"}};\nfunction countDesignDecisions(s){const e=["preferences","likes","tags"];const r=["posts","followers","userId"];console.log("Embedded fields: "+e.length);console.log("Referenced fields: "+r.length);console.log("Design: "+(r.length>e.length?"reference-heavy":"embed-heavy"));}\ncountDesignDecisions(schema);\n`,
+          hints: ["Embedded: preferences, likes, tags = 3", "Referenced: posts, followers, userId = 3"],
+          test_cases: [{ description: `3 embedded, 3 referenced fields`, expected_output: `Embedded fields: 3\nReferenced fields: 3` }],
+          xp_reward: 450, order_index: 4, execution_engine: "judge0",
+        },
+      ],
+    },
+  ],
+};
+
+// ─── Sass/SCSS Track ────────────────────────────────────────
+export const SASS_TRACK: StaticTrack = {
+  id: "sass",
+  title: "Sass / SCSS",
+  description: `CSS with variables, nesting, mixins, and functions. Write DRY, maintainable styles.`,
+  color: "#cf649a",
+  difficulty_curve: "intermediate",
+  execution_engine: "browser",
+  category: "web",
+  order_index: 16,
+  is_published: true,
+  estimated_hours: 7,
+  learner_count: 3400,
+  units: [
+    {
+      id: "sass-u1", track_id: "sass", title: "Sass Fundamentals", description: "Variables, nesting, mixins, and functions", icon: "palette",order_index: 1,
+      lessons: [
+        {
+          id: "sass-u1-l1", unit_id: "sass-u1", track_id: "sass", type: "concept", title: "Variables & Nesting",
+          explanation_md: `# Sass Variables & Nesting\n\nSass adds programming features to CSS:\n\n## Variables\n\`\`\`scss\n// Define once, use everywhere\n$primary: #7c3aed;\n$font-size: 16px;\n$border-radius: 8px;\n\n.button {\n  background: $primary;\n  font-size: $font-size;\n  border-radius: $border-radius;\n}\n\`\`\`\n\n## Nesting\n\`\`\`scss\n// Sass nesting:\n.nav {\n  background: $primary;\n  \n  ul { list-style: none; }\n  \n  li { display: inline-block; }\n  \n  a {\n    color: white;\n    &:hover { opacity: 0.8; }  // & = parent (.nav a:hover)\n  }\n}\n\`\`\`\n\nCompiles to flat CSS:\n\`\`\`css\n.nav { background: #7c3aed; }\n.nav ul { list-style: none; }\n.nav li { display: inline-block; }\n.nav a { color: white; }\n.nav a:hover { opacity: 0.8; }\n\`\`\`\n\n## Your Task\nSimulate Sass compilation — convert nested selectors to flat CSS:`,
+          starter_code: `// Simulate Sass nesting compilation\nfunction compileSass(parent, children) {\n  const result = [];\n  result.push(parent + " { /* styles */ }");\n  \n  children.forEach(child => {\n    if (child.startsWith("&")) {\n      // & is replaced with parent selector\n      result.push(parent + child.substring(1) + " { /* styles */ }");\n    } else {\n      result.push(parent + " " + child + " { /* styles */ }");\n    }\n  });\n  \n  return result;\n}\n\nconst output = compileSass(".nav", ["ul", "li", "a", "&:hover", "&.active"]);\noutput.forEach(line => console.log(line));\n`,
+          reference_solution: `function compileSass(p,children){const r=[p+" { /* styles */ }"];children.forEach(c=>{if(c.startsWith("&"))r.push(p+c.substring(1)+" { /* styles */ }");else r.push(p+" "+c+" { /* styles */ }");});return r;}\nconst out=compileSass(".nav",["ul","li","a","&:hover","&.active"]);\nout.forEach(l=>console.log(l));\n`,
+          hints: ["& is replaced with the parent selector", '&:hover becomes .nav:hover'],
+          test_cases: [{ description: `&:hover becomes .nav:hover`, expected_output: `.nav:hover { /* styles */ }` }],
+          xp_reward: 75, order_index: 1, execution_engine: "browser",
+        },
+        {
+          id: "sass-u1-l2", unit_id: "sass-u1", track_id: "sass", type: "challenge", title: "Mixins & Functions",
+          explanation_md: `# Sass Mixins\n\nMixins are reusable blocks of CSS:\n\n\`\`\`scss\n// Define mixin\n@mixin flex-center {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n\n// With parameters\n@mixin button($bg: #7c3aed, $radius: 8px) {\n  background: $bg;\n  border-radius: $radius;\n  padding: 8px 16px;\n  border: none;\n  cursor: pointer;\n}\n\n// Use mixin\n.card { @include flex-center; }\n.primary-btn { @include button(); }\n.danger-btn { @include button(#dc2626, 4px); }\n\`\`\`\n\n## Functions\n\`\`\`scss\n@function rem($px, $base: 16) {\n  @return #{$px / $base}rem;\n}\n\nh1 { font-size: rem(32); }  // 2rem\np  { font-size: rem(16); }  // 1rem\n\`\`\`\n\n## Your Task\nSimulate a px-to-rem converter function:`,
+          starter_code: `// Sass function simulation: px to rem\nfunction rem(px, base = 16) {\n  return (px / base) + "rem";\n}\n\n// Font size scale\nconst sizes = {\n  xs: rem(12),   // 0.75rem\n  sm: rem(14),   // 0.875rem\n  base: rem(16), // 1rem\n  lg: rem(18),   // 1.125rem\n  xl: rem(20),   // 1.25rem\n  "2xl": rem(24), // 1.5rem\n  "3xl": rem(32), // 2rem\n};\n\nObject.entries(sizes).forEach(([name, value]) => {\n  console.log(name + ": " + value);\n});\n`,
+          reference_solution: `function rem(px,base=16){return(px/base)+"rem";}\nconst sizes={xs:rem(12),sm:rem(14),base:rem(16),lg:rem(18),xl:rem(20),"2xl":rem(24),"3xl":rem(32)};\nObject.entries(sizes).forEach(([n,v])=>console.log(n+": "+v));\n`,
+          hints: ["12/16 = 0.75rem", '32/16 = 2rem'],
+          test_cases: [{ description: `3xl is 2rem`, expected_output: `3xl: 2rem` }],
+          xp_reward: 100, order_index: 2, execution_engine: "browser",
+        },
+        {
+          id: "sass-u1-l3", unit_id: "sass-u1", track_id: "sass", type: "challenge", title: "Color Functions",
+          explanation_md: `# Sass Color Functions\n\nSass has powerful built-in color manipulation:\n\n\`\`\`scss\n$primary: #7c3aed;\n\n// Lighten/Darken\nlighten($primary, 20%)   // lighter shade\ndarken($primary, 10%)    // darker shade\n\n// Opacity\nrgba($primary, 0.5)      // 50% transparent\n\n// Mix colors\nmix($primary, white, 80%)  // 80% primary, 20% white\nmix(red, blue, 50%)        // purple\n\n// Color info\nhue($primary)           // hue in degrees\nsaturation($primary)    // saturation %\nlightness($primary)     // lightness %\n\n// Generate palette\n$colors: (\n  100: lighten($primary, 40%),\n  500: $primary,\n  900: darken($primary, 30%),\n);\n\`\`\`\n\n## Your Task\nGenerate a color palette from a base color:`,
+          starter_code: `// Simulate Sass color functions\nfunction hexToHsl(hex) {\n  const r = parseInt(hex.slice(1,3), 16) / 255;\n  const g = parseInt(hex.slice(3,5), 16) / 255;\n  const b = parseInt(hex.slice(5,7), 16) / 255;\n  const max = Math.max(r, g, b), min = Math.min(r, g, b);\n  let h = 0, s = 0, l = (max + min) / 2;\n  if (max !== min) {\n    const d = max - min;\n    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);\n    switch(max) {\n      case r: h = ((g-b)/d + (g<b?6:0)) / 6; break;\n      case g: h = ((b-r)/d + 2) / 6; break;\n      case b: h = ((r-g)/d + 4) / 6; break;\n    }\n  }\n  return [Math.round(h*360), Math.round(s*100), Math.round(l*100)];\n}\n\nfunction lighten(hex, pct) {\n  const [h, s, l] = hexToHsl(hex);\n  return \`hsl(\${h}, \${s}%, \${Math.min(100, l + pct)}%)\`;\n}\n\nfunction darken(hex, pct) {\n  const [h, s, l] = hexToHsl(hex);\n  return \`hsl(\${h}, \${s}%, \${Math.max(0, l - pct)}%)\`;\n}\n\nconst primary = "#7c3aed";\nconsole.log("100: " + lighten(primary, 40));\nconsole.log("300: " + lighten(primary, 20));\nconsole.log("500: " + primary);\nconsole.log("700: " + darken(primary, 15));\nconsole.log("900: " + darken(primary, 30));\n`,
+          reference_solution: `function hexToHsl(h){const r=parseInt(h.slice(1,3),16)/255,g=parseInt(h.slice(3,5),16)/255,b=parseInt(h.slice(5,7),16)/255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b);let hh=0,s=0,l=(mx+mn)/2;if(mx!==mn){const d=mx-mn;s=l>0.5?d/(2-mx-mn):d/(mx+mn);switch(mx){case r:hh=((g-b)/d+(g<b?6:0))/6;break;case g:hh=((b-r)/d+2)/6;break;case b:hh=((r-g)/d+4)/6;break;}}return[Math.round(hh*360),Math.round(s*100),Math.round(l*100)];}\nfunction lighten(h,p){const[hh,s,l]=hexToHsl(h);return'hsl('+hh+', '+s+'%, '+Math.min(100,l+p)+'%)';}\nfunction darken(h,p){const[hh,s,l]=hexToHsl(h);return'hsl('+hh+', '+s+'%, '+Math.max(0,l-p)+'%)';}\nconst p="#7c3aed";\nconsole.log("100: "+lighten(p,40));\nconsole.log("300: "+lighten(p,20));\nconsole.log("500: "+p);\nconsole.log("700: "+darken(p,15));\nconsole.log("900: "+darken(p,30));\n`,
+          hints: ["500 is just the original color", 'lighten increases the L in HSL'],
+          test_cases: [{ description: `500 is the original color`, expected_output: `500: #7c3aed` }],
+          xp_reward: 125, order_index: 3, execution_engine: "browser",
+        },
+        {
+          id: "sass-u1-l4", unit_id: "sass-u1", track_id: "sass", type: "boss", title: "Boss: Design System",
+          explanation_md: `# Boss: Build a Design System\n\nUse Sass features to build a complete design token system:\n\n\`\`\`scss\n// Design tokens\n$colors: (primary: #7c3aed, success: #22c55e, danger: #ef4444);\n$spacing: (1: 4px, 2: 8px, 3: 16px, 4: 24px, 5: 48px);\n$radii: (sm: 4px, md: 8px, lg: 16px, full: 9999px);\n\n// Generate utility classes\n@each $name, $value in $colors {\n  .bg-#{$name} { background: $value; }\n  .text-#{$name} { color: $value; }\n}\n\n@each $size, $value in $spacing {\n  .p-#{$size} { padding: $value; }\n  .m-#{$size} { margin: $value; }\n}\n\`\`\`\n\n## Boss Challenge\nSimulate generating utility class names:`,
+          starter_code: `// Design system generator\nconst colors = { primary: "#7c3aed", success: "#22c55e", danger: "#ef4444", warning: "#f59e0b" };\nconst spacing = { 1: "4px", 2: "8px", 3: "16px", 4: "24px", 5: "48px" };\n\n// Generate color utilities\nconst colorUtils = [];\nObject.entries(colors).forEach(([name, value]) => {\n  colorUtils.push(\`.bg-\${name} { background: \${value}; }\`);\n  colorUtils.push(\`.text-\${name} { color: \${value}; }\`);\n});\n\n// Generate spacing utilities\nconst spacingUtils = [];\nObject.entries(spacing).forEach(([size, value]) => {\n  spacingUtils.push(\`.p-\${size} { padding: \${value}; }\`);\n  spacingUtils.push(\`.m-\${size} { margin: \${value}; }\`);\n});\n\nconsole.log("Color classes: " + colorUtils.length);\nconsole.log("Spacing classes: " + spacingUtils.length);\nconsole.log("Total classes: " + (colorUtils.length + spacingUtils.length));\nconsole.log("Sample: " + colorUtils[0]);\n`,
+          reference_solution: `const colors={primary:"#7c3aed",success:"#22c55e",danger:"#ef4444",warning:"#f59e0b"};\nconst spacing={1:"4px",2:"8px",3:"16px",4:"24px",5:"48px"};\nconst cu=[];Object.entries(colors).forEach(([n,v])=>{cu.push('.bg-'+n+' { background: '+v+'; }');cu.push('.text-'+n+' { color: '+v+'; }');});\nconst su=[];Object.entries(spacing).forEach(([s,v])=>{su.push('.p-'+s+' { padding: '+v+'; }');su.push('.m-'+s+' { margin: '+v+'; }');});\nconsole.log("Color classes: "+cu.length);\nconsole.log("Spacing classes: "+su.length);\nconsole.log("Total classes: "+(cu.length+su.length));\nconsole.log("Sample: "+cu[0]);\n`,
+          hints: ["4 colors × 2 types = 8 color classes", '5 spacing sizes × 2 types = 10 spacing classes'],
+          test_cases: [{ description: `8 color classes, 10 spacing classes, 18 total`, expected_output: `Color classes: 8\nSpacing classes: 10\nTotal classes: 18` }],
+          xp_reward: 400, order_index: 4, execution_engine: "browser",
+        },
+      ],
+    },
+  ],
+};
